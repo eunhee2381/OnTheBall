@@ -3,7 +3,6 @@ package com.company.boogie
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
-<<<<<<< HEAD
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
@@ -14,8 +13,6 @@ import com.company.boogie.models.FirestoreUserModel
 import com.company.boogie.models.User
 import java.text.SimpleDateFormat
 import java.util.Locale
-=======
->>>>>>> origin/master
 
 class LoginActivity {
     class LoginActivity : AppCompatActivity() {
