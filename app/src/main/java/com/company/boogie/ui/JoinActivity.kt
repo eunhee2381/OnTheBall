@@ -1,4 +1,4 @@
-package com.company.boogie
+package com.company.boogie.ui
 
 import android.os.Bundle
 import android.os.PersistableBundle
