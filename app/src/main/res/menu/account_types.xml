@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/user_account"
+        android:title="서비스 사용자 계정"/>
+    <item android:id="@+id/admin_account"
+        android:title="서비스 관리자 계정"/>
+</menu>

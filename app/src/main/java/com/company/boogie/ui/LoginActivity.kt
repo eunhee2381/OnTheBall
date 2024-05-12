@@ -1,24 +1,25 @@
 package com.company.boogie.ui
 
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.company.boogie.StatusCode
-import com.company.boogie.models.FirestoreUserModel
-import com.company.boogie.models.User
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.company.boogie.R
 
-class LoginActivity {
-    class LoginActivity : AppCompatActivity() {
-        override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-            super.onCreate(savedInstanceState, persistentState)
+class LoginActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.login)  // login 레이아웃을 불러옵니다.
 
+        // 로그인 버튼 클릭 이벤트
+        findViewById<Button>(R.id.signinbutton).setOnClickListener {
+            // 로그인 처리 로직 (예: Firebase 로그인)
+        }
+
+        // 회원가입 버튼 클릭 이벤트
+        findViewById<Button>(R.id.signupbutton).setOnClickListener {
+            // JoinActivity로 이동
+            startActivity(Intent(this, JoinActivity::class.java))
         }
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/managermenulist"
+        android:title="기자재 목록"/>
+    <item
+        android:id="@+id/managermenumypage"
+        android:title="마이 페이지"/>
+    <item
+        android:id="@+id/managermenucamera"
+        android:title="기자재 인식"/>
+    <item
+        android:id="@+id/managermenurental"
+        android:title="기자재 대여"/>
+    <item
+        android:id="@+id/managermenunotification"
+        android:title="알림 페이지"/>
+    <item
+        android:id="@+id/menudevelop"
+        android:title="개발자"/>
+    <!-- 메니저 메뉴 -->
+</menu>

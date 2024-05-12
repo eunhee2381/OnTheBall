@@ -1,6 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <!-- Auto layout, variables, and unit scale are not yet supported -->
+    <RelativeLayout
+        android:id="@+id/frame_1"
+        android:layout_width="412dp"
+        android:layout_height="54dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="#2D9596"
+        android:clipToOutline="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <ImageButton
+            android:id="@+id/manager_alarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="63dp"
+            android:background="@android:color/transparent"
+            android:padding="16dp"
+            android:src="@drawable/alarm" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="기자재 반납"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/manager_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="589dp"
+        android:layout_marginBottom="24dp"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/list"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/manager_rental"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frame_1" />
+
+    <TextView
+        android:id="@+id/ManagerList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="기자재 목록"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/manager_list"
+        app:layout_constraintStart_toStartOf="@id/manager_list"
+        app:layout_constraintEnd_toEndOf="@id/manager_list"/>
+
+    <!-- ImageButton and TextView for Rental -->
+    <ImageButton
+        android:id="@+id/manager_rental"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/rental"
+        app:layout_constraintStart_toEndOf="@id/manager_list"
+        app:layout_constraintEnd_toStartOf="@id/manager_camera"
+        app:layout_constraintBottom_toBottomOf="@id/manager_list"
+        app:layout_constraintHorizontal_weight="1"/>
+
+    <TextView
+        android:id="@+id/ManagerRental"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="기자재 대여"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/manager_rental"
+        app:layout_constraintStart_toStartOf="@id/manager_rental"
+        app:layout_constraintEnd_toEndOf="@id/manager_rental"/>
+
+    <!-- ImageButton and TextView for Camera -->
+    <ImageButton
+        android:id="@+id/manager_camera"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/camera"
+        app:layout_constraintStart_toEndOf="@id/manager_rental"
+        app:layout_constraintEnd_toStartOf="@id/manager_mypage"
+        app:layout_constraintBottom_toBottomOf="@id/manager_rental"
+        app:layout_constraintHorizontal_weight="1"/>
+
+    <TextView
+        android:id="@+id/ManagerCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="기자재 인식"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/manager_camera"
+        app:layout_constraintStart_toStartOf="@id/manager_camera"
+        app:layout_constraintEnd_toEndOf="@id/manager_camera"/>
+
+    <!-- ImageButton and TextView for Mypage -->
+    <ImageButton
+        android:id="@+id/manager_mypage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/mypage"
+        app:layout_constraintStart_toEndOf="@id/manager_camera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/manager_camera"
+        app:layout_constraintHorizontal_weight="1"/>
+
+    <TextView
+        android:id="@+id/ManagerMypage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="마이페이지"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/manager_mypage"
+        app:layout_constraintStart_toStartOf="@id/manager_mypage"
+        app:layout_constraintEnd_toEndOf="@id/manager_mypage"/>
+
+    <FrameLayout
+        android:id="@+id/modal_window"
+        android:layout_width="380dp"
+        android:layout_height="560dp"
+        android:background="@drawable/modal_background"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.375">
+
+        <!-- 상단 바 -->
+        <View
+            android:layout_width="373dp"
+            android:layout_height="47dp"
+            android:background="@drawable/top_bar_background"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp" />
+
+        <!-- "X" 닫기 버튼 -->
+        <Button
+            android:id="@+id/close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="3dp"
+            android:background="@android:color/transparent"
+            android:text="X"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- 상세 설명 -->
+        <TextView
+            android:id="@+id/text_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="16dp"
+            android:padding="4dp"
+            android:text="관리자 기자재 반납"
+            android:textSize="16sp" />
+
+        <!-- 이미지 파일 -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="373dp"
+            android:layout_marginTop="48dp"
+            android:scaleType="centerCrop" />
+
+        <!-- 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="421dp"
+            android:background="#000000" />
+
+        <!-- 기자재 설명 -->
+        <TextView
+            android:id="@+id/manager_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="423dp"
+            android:padding="16dp"
+            android:text="여기에 기자재에 대한 설명이 들어갑니다."
+            android:textSize="16sp" />
+
+        <!-- 수정하기 버튼 -->
+        <Button
+            android:id="@+id/button_edit"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/signinbutton"
+            android:text="수정하기" />
+    </FrameLayout>
+
+    <!-- Menu Button -->
+    <ImageButton
+        android:id="@+id/manager_menuButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/menu"
+        android:padding="16dp"
+        android:src="@drawable/menu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

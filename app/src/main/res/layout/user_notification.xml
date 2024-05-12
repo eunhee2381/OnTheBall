@@ -1,6 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/frame_1"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:background="#2D9596"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="알람"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+    <!-- ImageButton and TextView for List -->
+    <ImageButton
+        android:id="@+id/user_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="589dp"
+        android:layout_marginBottom="24dp"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/list"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/user_rental"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frame_1" />
+
+    <TextView
+        android:id="@+id/UserList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="기자재 목록"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/user_list"
+        app:layout_constraintStart_toStartOf="@id/user_list"
+        app:layout_constraintEnd_toEndOf="@id/user_list"/>
+
+    <!-- ImageButton and TextView for Rental -->
+    <ImageButton
+        android:id="@+id/user_rental"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/rental"
+        app:layout_constraintStart_toEndOf="@id/user_list"
+        app:layout_constraintEnd_toStartOf="@id/user_alarm"
+        app:layout_constraintBottom_toBottomOf="@id/user_list"
+        app:layout_constraintHorizontal_weight="1"/>
+
+    <TextView
+        android:id="@+id/UserRental"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="기자재 대여"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/user_rental"
+        app:layout_constraintStart_toStartOf="@id/user_rental"
+        app:layout_constraintEnd_toEndOf="@id/user_rental"/>
+
+    <!-- ImageButton and TextView for Camera -->
+    <ImageButton
+        android:id="@+id/user_alarm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/alarm"
+        app:layout_constraintStart_toEndOf="@id/user_rental"
+        app:layout_constraintEnd_toStartOf="@id/user_mypage"
+        app:layout_constraintBottom_toBottomOf="@id/user_rental"
+        app:layout_constraintHorizontal_weight="1"/>
+
+    <TextView
+        android:id="@+id/UserCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="기자재 인식"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/user_alarm"
+        app:layout_constraintStart_toStartOf="@id/user_alarm"
+        app:layout_constraintEnd_toEndOf="@id/user_alarm"/>
+
+    <!-- ImageButton and TextView for Mypage -->
+    <ImageButton
+        android:id="@+id/user_mypage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="16dp"
+        android:src="@drawable/mypage"
+        app:layout_constraintStart_toEndOf="@id/user_alarm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/user_alarm"
+        app:layout_constraintHorizontal_weight="1"/>
+
+    <TextView
+        android:id="@+id/UserMypage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="마이페이지"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/user_mypage"
+        app:layout_constraintStart_toStartOf="@id/user_mypage"
+        app:layout_constraintEnd_toEndOf="@id/user_mypage"/>
+
+    <!-- Menu Button -->
+    <ImageButton
+        android:id="@+id/user_menuButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/menu"
+        android:padding="16dp"
+        android:src="@drawable/menu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
