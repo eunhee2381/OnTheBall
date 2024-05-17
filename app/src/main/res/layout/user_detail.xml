@@ -166,11 +166,11 @@
         app:layout_constraintHorizontal_weight="1"/>
 
     <TextView
-        android:id="@+id/UserCamera"
+        android:id="@+id/UserAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="기자재 인식"
+        android:text="알림"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/user_alarm"
         app:layout_constraintStart_toStartOf="@id/user_alarm"

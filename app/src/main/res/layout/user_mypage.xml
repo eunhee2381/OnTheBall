@@ -21,11 +21,76 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:text="마이페이지"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/frame_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <!-- 사용자 아이콘 -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mypage"
+            android:padding="8dp" />
+
+        <!-- 사용자 정보 텍스트 -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:id="@+id/adminname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="admin"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/adminemail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="admin@hansung.ac.kr"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- 로그아웃 및 탈퇴하기 버튼 섹션 -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <android.widget.Button
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/signinbutton"
+                android:text="로그아웃"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="8dp" />
+
+            <android.widget.Button
+                android:id="@+id/withdraw_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/signinbutton"
+                android:text="탈퇴하기"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
 
 
 
@@ -94,11 +159,11 @@
         app:layout_constraintHorizontal_weight="1"/>
 
     <TextView
-        android:id="@+id/UserCamera"
+        android:id="@+id/UserAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="기자재 인식"
+        android:text="알림"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/user_alarm"
         app:layout_constraintStart_toStartOf="@id/user_alarm"

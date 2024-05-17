@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Auto layout, variables, and unit scale are not yet supported -->
+    <!-- 상단 바 -->
     <RelativeLayout
         android:id="@+id/frame_1"
         android:layout_width="0dp"
@@ -15,6 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- 알림 버튼 -->
         <ImageButton
             android:id="@+id/manager_alarm"
             android:layout_width="wrap_content"
@@ -26,20 +27,161 @@
             android:src="@drawable/alarm" />
     </RelativeLayout>
 
-
+    <!-- 블랙리스트 텍스트 -->
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="6dp"
         android:text="블랙리스트 수정"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/transparent"
+        android:padding="8dp"
+        android:src="@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 블랙리스트 항목들 -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/frame_1"
+        app:layout_constraintBottom_toTopOf="@+id/add_blacklist_section"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"
+        tools:ignore="MissingConstraints">
+
+        <!-- 블랙리스트 항목 예시 -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="user3"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="미반납: 아두이노"
+                android:textSize="16sp" />
+
+            <android.widget.Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/signinbutton"
+                android:text="삭제"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <!-- 블랙리스트 항목 예시 -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="user4"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="미반납: 라즈베리파이"
+                android:textSize="16sp" />
+
+            <android.widget.Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/signinbutton"
+                android:text="삭제"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 블랙리스트 추가 섹션 -->
+    <LinearLayout
+        android:id="@+id/add_blacklist_section"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        app:layout_constraintBottom_toTopOf="@+id/modify_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"
+        android:layout_marginBottom="8dp">
+
+        <EditText
+            android:id="@+id/addition_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_background"
+            android:hint="추가할 블랙리스트 계정명"
+            android:padding="8dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/not_returned"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_background"
+            android:hint="미반납한 기자재명"
+            android:gravity="top|start"
+            android:padding="8dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:inputType="textMultiLine"
+            android:minLines="5"
+            />
+
+    </LinearLayout>
+
+    <!-- 수정 버튼 -->
+    <android.widget.Button
+        android:id="@+id/modify_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/signinbutton"
+        android:text="수정"
+        android:textSize="24dp"
+        android:textColor="@android:color/black"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@id/manager_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <!-- ImageButton and TextView for List -->
     <ImageButton
         android:id="@+id/manager_list"
         android:layout_width="0dp"
@@ -64,7 +206,7 @@
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/manager_list"
         app:layout_constraintStart_toStartOf="@id/manager_list"
-        app:layout_constraintEnd_toEndOf="@id/manager_list"/>
+        app:layout_constraintEnd_toEndOf="@id/manager_list" />
 
     <!-- ImageButton and TextView for Rental -->
     <ImageButton
@@ -77,7 +219,7 @@
         app:layout_constraintStart_toEndOf="@id/manager_list"
         app:layout_constraintEnd_toStartOf="@id/manager_camera"
         app:layout_constraintBottom_toBottomOf="@id/manager_list"
-        app:layout_constraintHorizontal_weight="1"/>
+        app:layout_constraintHorizontal_weight="1" />
 
     <TextView
         android:id="@+id/ManagerRental"
@@ -88,7 +230,7 @@
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/manager_rental"
         app:layout_constraintStart_toStartOf="@id/manager_rental"
-        app:layout_constraintEnd_toEndOf="@id/manager_rental"/>
+        app:layout_constraintEnd_toEndOf="@id/manager_rental" />
 
     <!-- ImageButton and TextView for Camera -->
     <ImageButton
@@ -101,7 +243,7 @@
         app:layout_constraintStart_toEndOf="@id/manager_rental"
         app:layout_constraintEnd_toStartOf="@id/manager_mypage"
         app:layout_constraintBottom_toBottomOf="@id/manager_rental"
-        app:layout_constraintHorizontal_weight="1"/>
+        app:layout_constraintHorizontal_weight="1" />
 
     <TextView
         android:id="@+id/ManagerCamera"
@@ -112,7 +254,7 @@
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/manager_camera"
         app:layout_constraintStart_toStartOf="@id/manager_camera"
-        app:layout_constraintEnd_toEndOf="@id/manager_camera"/>
+        app:layout_constraintEnd_toEndOf="@id/manager_camera" />
 
     <!-- ImageButton and TextView for Mypage -->
     <ImageButton
@@ -125,7 +267,7 @@
         app:layout_constraintStart_toEndOf="@id/manager_camera"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/manager_camera"
-        app:layout_constraintHorizontal_weight="1"/>
+        app:layout_constraintHorizontal_weight="1" />
 
     <TextView
         android:id="@+id/ManagerMypage"
@@ -136,9 +278,12 @@
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/manager_mypage"
         app:layout_constraintStart_toStartOf="@id/manager_mypage"
-        app:layout_constraintEnd_toEndOf="@id/manager_mypage"/>
+        app:layout_constraintEnd_toEndOf="@id/manager_mypage" />
+
+    <!-- 블랙리스트 수정 버튼 -->
 
     <!-- Menu Button -->
+
     <ImageButton
         android:id="@+id/manager_menuButton"
         android:layout_width="wrap_content"
