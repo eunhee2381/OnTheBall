@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-const serviceAccount = require('C:\\boogie\\app\\boogie-1af95-firebase-adminsdk-vlwjd-ea92d6a6ae.json');
+const serviceAccount = require('./serviceAccountKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)

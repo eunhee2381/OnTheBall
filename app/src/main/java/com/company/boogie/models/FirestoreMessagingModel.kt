@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.company.boogie.R
@@ -23,14 +24,42 @@ const val channelName = "com.company.boogie"
 class FirestoreMessagingModel : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+
+        Log.d("Hello", "onNewToken called with token: $token")
+
         // 사용자 토큰을 Firestore에 저장
         val db = Firebase.firestore
         val userToken = hashMapOf("fcmToken" to token)
-        db.collection("users").document("userId").set(userToken)
+
+        // Firestore에 저장
+        db.collection("users").document("userId")
+            .set(userToken)
+            .addOnSuccessListener {
+                Log.d("Hello", "FCM token successfully saved to Firestore")
+            }
+            .addOnFailureListener { e ->
+                Log.w("Hello", "Error saving FCM token to Firestore", e)
+            }
+
+        // 로그캣에서 토큰 보기
+        Log.d("Hello", "FCM token: $token")
     }
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+
+        // 고유한 알림 ID 생성
+        val notificationId = System.currentTimeMillis().toInt()
+
+        // Notification 부분이 있는 경우
         remoteMessage.notification?.let {
-            generateNotification(it.title ?: "No Title", it.body ?: "No Message")
+            generateNotification(it.title ?: "No Title", it.body ?: "No Message", notificationId)
+        }
+
+        // 로그캣에서 메세지 보기
+        if (remoteMessage.data.isNotEmpty()) {
+            Log.d("Hello", "FCM message data: ${remoteMessage.data}")
+        } else {
+            Log.d("Hello", "FCM message has no data")
         }
     }
     /*
@@ -56,7 +85,7 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
         return remoteViews
     }
 
-    private fun generateNotification(title: String, message: String) {
+    private fun generateNotification(title: String, message: String, notificationId: Int) {
         val intent = Intent(this, LoginActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
@@ -69,10 +98,11 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
             .setSmallIcon(R.drawable.alarm)
             .setAutoCancel(true)
             .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
-            .setOnlyAlertOnce(true)
+            //.setOnlyAlertOnce(true)       // 알림이 한 번만 알림음을 울리고 업데이트
             .setContentIntent(pendingIntent)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(notificationLayout)
+
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -81,7 +111,12 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(notificationChannel)
         }
 
-        notificationManager.notify(0, builder.build())
+        notificationManager.notify(notificationId, builder.build())
+        //notificationManager.notify(0, builder.build())
+
+        // Notification 생성 로직
+        Log.d("Hello", "Notification generated with title: $title, message: $message")
+
     }
     /*
     private fun showRequestDialog(message: String?) {
