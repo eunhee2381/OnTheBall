@@ -32,7 +32,7 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
         val userToken = hashMapOf("fcmToken" to token)
 
         // Firestore에 저장
-        db.collection("users").document("userId")
+        db.collection("User").document("userId")
             .set(userToken)
             .addOnSuccessListener {
                 Log.d("Hello", "FCM token successfully saved to Firestore")
@@ -85,6 +85,13 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
         return remoteViews
     }
 
+
+    /**
+     * 알람을 보내는 함수입니다
+     * @param title 알람 제목
+     * @param message 알람 내용
+     * @param
+     */
     private fun generateNotification(title: String, message: String, notificationId: Int) {
         val intent = Intent(this, LoginActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
