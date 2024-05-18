@@ -52,7 +52,7 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
 
         // Notification 부분이 있는 경우
         remoteMessage.notification?.let {
-            generateNotification(it.title ?: "No Title", it.body ?: "No Message", notificationId)
+            generateNotification(it.title ?: "No Title", it.body ?: "No Message", it.body ?: "No Message", notificationId)
         }
 
         // 로그캣에서 메세지 보기
