@@ -89,13 +89,17 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
     /**
      * 알람을 보내는 함수입니다
      * @param title 알람 제목
-     * @param message 알람 내용
-     * @param
+     * @param userName 알람을 보낸 사람의 이름
+     * @param productName 대여 신청할 기자재의 이름
+     *      * @param message 알람 내용
+     *
+     * 알람 형식 -> ex) 태민(userName) 님이 아두이노(productName) 을 대여요청했습니다.
      */
-    private fun generateNotification(title: String, message: String, notificationId: Int) {
+    private fun generateNotification(title: String, userName: String, productName: String, notificationId: Int) {
         val intent = Intent(this, LoginActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
+        val message = userName + "님이" + productName + "을 대여요청하였습니다"
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
