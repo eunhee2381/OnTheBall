@@ -18,8 +18,8 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
         android:text="계정 생성"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -99,11 +99,12 @@
         app:layout_constraintStart_toStartOf="@+id/birthDay"
         app:layout_constraintTop_toBottomOf="@id/birthDay" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/signup"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:background="@drawable/signinbutton"
+
         android:text="회원가입"
         android:textSize="19sp"
         app:layout_constraintBottom_toBottomOf="parent"
