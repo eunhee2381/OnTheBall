@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,11 @@ class Manager_ModifyActivity : AppCompatActivity() {
         setContentView(R.layout.manager_modify)
 
         setupNavigationButtons()
+
+        val deleteButton: Button = findViewById(R.id.delete)
+        deleteButton.setOnClickListener {
+            showDeleteDialog()
+        }
     }
 
     private fun setupNavigationButtons() {
@@ -78,5 +84,10 @@ class Manager_ModifyActivity : AppCompatActivity() {
             }
             else -> false
         }
+    }
+
+    private fun showDeleteDialog() {
+        val intent = Intent(this, Manager_Delete_DialogActivity::class.java)
+        startActivity(intent)
     }
 }
