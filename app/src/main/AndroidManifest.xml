@@ -15,8 +15,17 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
 
-        <activity
-            android:name=".ui.Manager_DetailActivity"
+<!--        <activity-->
+<!--            android:name=".ui.Manager_DetailActivity"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+
+        <!-- 시작 액티비티 -->
+        <activity android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,8 +54,8 @@
             android:exported="true"/>
 
         <!-- 매니저 상세화면 -->
-<!--        <activity android:name=".ui.Manager_DetailActivity"-->
-<!--            android:exported="true"/>-->
+        <activity android:name=".ui.Manager_DetailActivity"
+            android:exported="true"/>
 
         <!-- 메니저 기자재목록 화면 -->
         <activity android:name=".ui.Manager_ListActivity"

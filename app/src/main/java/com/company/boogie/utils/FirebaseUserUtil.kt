@@ -12,9 +12,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 /**
- * Firebase 인증 관련 작업을 처리하는 유틸리티 클래스입니다.
+ * Firebase 인증 관련 작업을 처리하는 유틸리티 singleton 객체입니다.
  */
-class FirebaseUserUtil{
+object FirebaseUserUtil{
 
     private val userModel = FirestoreUserModel()
 
