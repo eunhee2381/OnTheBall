@@ -53,6 +53,7 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
         // Notification 부분이 있는 경우
         remoteMessage.notification?.let {
             generateNotification(it.title ?: "No Title", it.body ?: "No Message", it.body ?: "No Message", notificationId)
+            generateNotification2(it.title ?: "No Title", it.body ?: "No Message", notificationId)
         }
 
         // 로그캣에서 메세지 보기
@@ -63,17 +64,6 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
             Log.d("Hello", "FCM message has no data")
         }
     }
-    /*
-    override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        super.onMessageReceived(remoteMessage)
-        remoteMessage.data.isNotEmpty().let {
-            val message = remoteMessage.data["message"]
-
-            // 알림 메시지로 다이얼로그 표시
-            showRequestDialog(message)
-        }
-    }
-    */
 
     @SuppressLint("RemoteViewLayout")
     private fun getRemoteView(title: String, message: String): RemoteViews {
@@ -92,6 +82,7 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
      * @param title 알람 제목
      * @param userName 알람을 보낸 사람의 이름(이메일)
      * @param productName 대여 신청할 기자재의 이름
+     * @param notificationId 각 알람 고유 아이디 (안그러면 알람이 겹침)
      *      * @param message 알람 내용
      *
      * 알람 형식 -> ex) 태민(userName) 님이 아두이노(productName) 을 대여요청했습니다.
@@ -104,8 +95,47 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
         }
         val message = userName + "님이" + productName + "을 대여요청하였습니다"
 
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+
+        val notificationLayout = getRemoteView(title, message)
+
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.alarm)
+            .setAutoCancel(true)
+            .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
+            //.setOnlyAlertOnce(true)       // 알림이 한 번만 알림음을 울리고 업데이트
+            .setContentIntent(pendingIntent)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(notificationLayout)
 
 
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+
+        notificationManager.notify(notificationId, builder.build())
+        //notificationManager.notify(0, builder.build())
+
+        // Notification 생성 로직
+        Log.d("Hello", "Notification generated with title: $title, message: $message")
+
+    }
+
+    /** 사용자용 알람을 보내는 함수입니다.
+     * @param title 알람 제목
+     * @param message 알람 내용
+     * @param notificationId 각 알람 고유 아이디
+     *
+     * 수락/거절 액티비티 제작 필요
+     * 첫줄에 LoginActivity -> 새로 만든 수락/거절 액티비티 연결 필요
+     */
+    private fun generateNotification2(title: String, message: String, notificationId: Int) {
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
@@ -144,5 +174,4 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
         }
     }
     */
-
 }
