@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main) // ----- 수정 필요 (아이콘 넣은 레이아웃) -----
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 로그인 정보에 따라 액티비티 실행
-    fun redirectActivity() {
+    private fun redirectActivity() {
         val currentUser: FirebaseUser? = FirebaseUserUtil.whoAmI() // 로그인 정보
         Log.d("MainActivity", "로그인 정보: $currentUser")
 

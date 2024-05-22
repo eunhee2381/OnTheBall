@@ -120,4 +120,41 @@ object FirebaseUserUtil{
     fun whoAmI(): FirebaseUser? {
         return Firebase.auth.currentUser
     }
+
+    /**
+     * UID를 사용하여 사용자를 삭제합니다.
+     *
+     * @param uid 검색할 사용자의 UID입니다.
+     */
+    fun leaveUser(uid: String, callback: (Int) -> Unit) {
+        if (Firebase.auth.currentUser == null) {
+            Log.w("FirebaseLoginUtils", "[${uid}] 로그인 정보를 불러오지 못해 탈퇴 실패")
+            callback(StatusCode.FAILURE)
+        }
+        // DB에서 계정 삭제 후 Auth에서 계정 삭제
+        else {
+            userModel.deleteUser(uid) { STATUS_CODE ->
+                // DB에서 계정 삭제 성공
+                if (STATUS_CODE == StatusCode.SUCCESS) {
+                    Firebase.auth.currentUser!!.delete()
+                        .addOnCompleteListener {
+                            // Auth에서 계정 삭제 성공
+                            if (it.isSuccessful) {
+                                Log.d("FirebaseLoginUtils", "[${uid}] 계정 삭제 후 탈퇴 성공")
+                                callback(StatusCode.SUCCESS)
+                            }
+                            // Auth에서 계정 삭제 실패
+                            else {
+                                Log.w("FirebaseLoginUtils", "[${uid}] 계정 삭제 실패")
+                                callback(StatusCode.FAILURE)
+                            }
+                        }
+                }
+                // DB에서 계정 삭제 실패
+                else {
+                    callback(StatusCode.FAILURE)
+                }
+            }
+        }
+    }
 }
