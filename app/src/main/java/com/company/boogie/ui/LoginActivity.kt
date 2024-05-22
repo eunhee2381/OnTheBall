@@ -1,11 +1,16 @@
 package com.company.boogie.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.company.boogie.R
 import com.company.boogie.StatusCode
@@ -15,6 +20,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login)  // login 레이아웃을 불러옵니다.
+
+        // 알람 권한 부여 - 앱 첫 실행시
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestSinglePermission(Manifest.permission.POST_NOTIFICATIONS)
+        }
 
         // 로그인 버튼 클릭 이벤트
         findViewById<Button>(R.id.signinbutton).setOnClickListener {
@@ -67,4 +77,30 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // 알람 권한 부여 함수 - 앱 첫 시작시 수락/거절 창 뜸
+    private fun requestSinglePermission(permission: String) { // 한번에 하나의 권한만 요청하는 예제
+        if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) // 권한 유무 확인
+            return
+        val requestPermLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { // 권한 요청 컨트랙트
+                if (it == false) { // permission is not granted!
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Warning")
+                        setMessage(getString(R.string.no_permission, permission))
+                    }.show()
+                }
+            }
+        if (shouldShowRequestPermissionRationale(permission)) { // 권한 설명 필수 여부 확인
+            // you should explain the reason why this app needs the permission.
+            AlertDialog.Builder(this).apply {
+                setTitle("Reason")
+                setMessage(getString(R.string.req_permission_reason, permission))
+                setPositiveButton("Allow") { _, _ -> requestPermLauncher.launch(permission) }
+                setNegativeButton("Deny") { _, _ -> }
+            }.show()
+        } else {
+            // should be called in onCreate()
+            requestPermLauncher.launch(permission) // 권한 요청 시작
+        }
+    }
 }
