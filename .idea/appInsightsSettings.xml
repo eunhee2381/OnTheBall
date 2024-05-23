@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.company.boogie" />
+                  <option name="mobileSdkAppId" value="1:184827492790:android:71c69bc6f2ff754645a917" />
+                  <option name="projectId" value="boogie-1af95" />
+                  <option name="projectNumber" value="184827492790" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
