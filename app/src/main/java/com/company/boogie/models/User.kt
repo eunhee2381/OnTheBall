@@ -7,5 +7,8 @@ data class User(
     val email: String = "",
     val name: String = "",
     val birthday: Timestamp = Timestamp(Date(0, 0, 1)), // 입력 안들어오면 1900-01-01로 설정됨
-    val idAdmin: Boolean = false
+    val isAdmin: Boolean = false,
+    val isBanned: Boolean = false,
+    val borrowing: String = "",
+    val token: String = ""
 )
