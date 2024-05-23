@@ -15,6 +15,8 @@ import androidx.core.app.NotificationCompat
 import com.company.boogie.R
 import com.company.boogie.ui.LoginActivity
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -27,23 +29,35 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
 
         Log.d("Hello", "onNewToken called with token: $token")
 
-        // 사용자 토큰을 Firestore에 저장
+        // Firebase Firestore 인스턴스를 가져옵니다.
         val db = Firebase.firestore
-        val userToken = hashMapOf("fcmToken" to token)
+        val auth = Firebase.auth
+
+        // 현재 로그인한 사용자의 UID를 가져옵니다.
+        val userId = auth.currentUser?.uid
+
+        if (userId == null) {
+            Log.w("Hello", "No user logged in, unable to save FCM token")
+            return
+        }
+
+        // 사용자 토큰을 Firestore에 저장할 데이터 구조를 정의합니다.
+        val userToken = hashMapOf("token" to token)
 
         // Firestore에 저장
-        db.collection("User").document("userId")
-            .set(userToken)
+        db.collection("User").document(userId)
+            .set(userToken, SetOptions.merge())
             .addOnSuccessListener {
-                Log.d("Hello", "FCM token successfully saved to Firestore")
+                Log.d("Hello", "FCM token successfully saved to Firestore for user $userId")
             }
             .addOnFailureListener { e ->
-                Log.w("Hello", "Error saving FCM token to Firestore", e)
+                Log.w("Hello", "Error saving FCM token to Firestore for user $userId", e)
             }
 
         // 로그캣에서 토큰 보기
         Log.d("Hello", "FCM token: $token")
     }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
