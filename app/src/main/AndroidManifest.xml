@@ -27,7 +27,7 @@
 <!--        </activity>-->
 
         <!-- 시작 액티비티 -->
-        <activity android:name=".ui.MainActivity"
+        <activity android:name=".ui.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
