@@ -50,13 +50,21 @@ object FirebaseUserUtil{
      */
     fun doSignUp(userEmail: String, password: String, name: String, birth: String, callback: (Int, String?) -> Unit){
         Firebase.auth.createUserWithEmailAndPassword(userEmail, password)
-            .addOnCompleteListener{additionTask ->
-                if(additionTask.isSuccessful){
+            .addOnCompleteListener { additionTask ->
+                if (additionTask.isSuccessful) {
                     val uid = Firebase.auth.currentUser?.uid.toString()
                     val currentUser = Firebase.auth.currentUser
                     val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                     val birthDate = Timestamp(parser.parse(birth))
-                    val newUser = User(userEmail, name, birthDate)
+                    val newUser = User(
+                        email = userEmail,
+                        name = name,
+                        birthday = birthDate,
+                        borrowing = "",
+                        isAdmin = false,
+                        isBanned = false,
+                        token = ""
+                    )
                     userModel.insertUser(uid, newUser) { STATUS_CODE ->
                         if (STATUS_CODE == StatusCode.SUCCESS) {
                             callback(StatusCode.SUCCESS, uid)
@@ -72,12 +80,13 @@ object FirebaseUserUtil{
                             callback(StatusCode.FAILURE, null)
                         }
                     }
-                }else{
+                } else {
                     Log.w("FirebaseLoginUtils", "Auth에서 사용자 생성 중 에러 발생!!! -> ", additionTask.exception)
                     callback(StatusCode.FAILURE, null)
                 }
             }
     }
+
 
     /**
      * 현재 로그인된 사용자를 로그아웃합니다.
