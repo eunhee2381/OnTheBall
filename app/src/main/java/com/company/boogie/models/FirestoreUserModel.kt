@@ -53,13 +53,23 @@ class FirestoreUserModel {
      * @param uid 상세 정보를 조회할 사용자의 고유 ID입니다.
      * @param callback 사용자 정보 조회 상태 코드(STATUS_CODE)와 User 객체를 반환하는 콜백 함수입니다.
      */
-    fun getUserDetail(uid: String,  callback: (Int, User?) -> Unit) {
+    fun getUserDetail(uid: String, callback: (Int, User?) -> Unit) {
         db.collection("User").document(uid).get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    val user = documentSnapshot.toObject(User::class.java)
-                    Log.d("FirestoreUserModel", "[${uid}] 사용자 DB에 불러오기 성공")
-                    callback(StatusCode.SUCCESS, user)
+                    try {
+                        val user = documentSnapshot.toObject(User::class.java)
+                        if (user != null) {
+                            Log.d("FirestoreUserModel", "[${uid}] 사용자 DB에 불러오기 성공")
+                            callback(StatusCode.SUCCESS, user)
+                        } else {
+                            Log.d("FirestoreUserModel", "[${uid}] 사용자 데이터를 변환할 수 없습니다.")
+                            callback(StatusCode.FAILURE, null)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("FirestoreUserModel", "[${uid}] 사용자 데이터 변환 중 에러 발생: ", e)
+                        callback(StatusCode.FAILURE, null)
+                    }
                 } else {
                     Log.d("FirestoreUserModel", "[${uid}] 사용자가 DB에 존재하지 않음")
                     callback(StatusCode.FAILURE, null)

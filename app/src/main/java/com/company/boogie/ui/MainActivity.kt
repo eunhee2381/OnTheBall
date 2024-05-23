@@ -44,10 +44,10 @@ class MainActivity : AppCompatActivity() {
             // uid로 DB에서 사용자 정보 가져옴
             FirebaseUserUtil.getUser(uid) { STATUS_CODE, user ->
                 if (STATUS_CODE == StatusCode.SUCCESS && user != null) {
-                    Log.d("MainActivity", "[${uid}]:사용자명[${user.name}]:관리자여부[(${user.idAdmin})] 사용자 정보 성공적으로 가져옴")
+                    Log.d("MainActivity", "[${uid}]:사용자명[${user.name}]:관리자여부[(${user.isAdmin})] 사용자 정보 성공적으로 가져옴")
 
                     // 관리자 계정이면 Manager_ListActivity 실행
-                    if (user.idAdmin) {
+                    if (user.isAdmin) {
                         Log.d("MainActivity", "Manager_ListActivity 실행 (로그인 o, 관리자 계정)")
                         startActivity(Intent(this, Manager_ListActivity::class.java))
                         finish()
