@@ -23,12 +23,18 @@ class Manager_BlacklistActivity : AppCompatActivity() {
         }
 
         // 버튼들 인식
-        val back_Button : ImageButton = findViewById(R.id.back_button)
+        val back_Button: ImageButton = findViewById(R.id.blacklist_back_button) // 올바른 ID 사용
         val managerListButton: ImageButton = findViewById(R.id.manager_list)
         val managerRentalButton: ImageButton = findViewById(R.id.manager_rental)
         val managerCameraButton: ImageButton = findViewById(R.id.manager_camera)
         val managerMypageButton: ImageButton = findViewById(R.id.manager_mypage)
-        val blacklistModifyButton: ImageButton = findViewById(R.id.blacklist_modify)
+        val blacklistModifyButton: ImageButton = findViewById(R.id.go_blacklist_modify) // 블랙리스트 수정으로 가는 버튼
+        val managerAlarmButton: ImageButton = findViewById(R.id.manager_alarm)
+
+
+        managerAlarmButton.setOnClickListener {
+            startActivity(Intent(this, Manager_NotificationActivity::class.java))
+        }
 
         back_Button.setOnClickListener {
             startActivity(Intent(this, Manager_RentalActivity::class.java))

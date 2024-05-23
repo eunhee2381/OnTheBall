@@ -26,6 +26,10 @@ class Manager_DetailActivity : AppCompatActivity() {
             val intent = Intent(this, Manager_ListActivity::class.java)
             startActivity(intent)
         }
+        val managerAlarmButton: ImageButton = findViewById(R.id.manager_alarm)
+        managerAlarmButton.setOnClickListener {
+            startActivity(Intent(this, Manager_NotificationActivity::class.java))
+        }
 
 
         setupNavigationButtons()

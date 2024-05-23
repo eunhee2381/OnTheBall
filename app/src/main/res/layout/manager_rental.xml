@@ -175,20 +175,21 @@
         android:src="@drawable/menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <android.widget.Button
+    <ImageButton
         android:id="@+id/black"
         android:layout_width="70dp"
         android:layout_height="45dp"
         android:layout_marginBottom="292dp"
         android:background="@drawable/signinbutton"
-        android:text=" →"
-        android:textSize="30sp"
-        android:gravity="center"
+        android:src="@drawable/arrow"
+        android:scaleType="centerInside"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.919"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.919"
         />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

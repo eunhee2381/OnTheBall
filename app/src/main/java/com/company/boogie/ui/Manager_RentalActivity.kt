@@ -28,7 +28,8 @@ class Manager_RentalActivity : AppCompatActivity() {
         val managerRentalButton: ImageButton = findViewById(R.id.manager_rental)
         val managerCameraButton: ImageButton = findViewById(R.id.manager_camera)
         val managerMypageButton: ImageButton = findViewById(R.id.manager_mypage)
-        val blackButton: Button = findViewById(R.id.black)
+        val managerAlarmButton: ImageButton = findViewById(R.id.manager_alarm)
+        val blackButton: ImageButton = findViewById(R.id.black)
 
         managerListButton.setOnClickListener {
             startActivity(Intent(this, Manager_ListActivity::class.java))
@@ -44,6 +45,9 @@ class Manager_RentalActivity : AppCompatActivity() {
         }
         blackButton.setOnClickListener {
             startActivity(Intent(this, Manager_BlacklistActivity::class.java))
+        }
+        managerAlarmButton.setOnClickListener {
+            startActivity(Intent(this, Manager_NotificationActivity::class.java))
         }
     }
 

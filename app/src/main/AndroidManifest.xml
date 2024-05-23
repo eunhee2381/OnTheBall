@@ -93,8 +93,14 @@
         <activity android:name=".ui.User_RentalActivity"
             android:exported="true"/>
 
+
+
         <activity
             android:name=".ui.Manager_Delete_DialogActivity"
+            android:theme="@style/DialogTheme" />
+
+        <activity
+            android:name=".ui.Accept_DialogActivity"
             android:theme="@style/DialogTheme" />
 
         <service

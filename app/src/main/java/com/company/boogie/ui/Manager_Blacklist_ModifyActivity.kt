@@ -4,17 +4,54 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.company.boogie.R
 
 class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
+
+    private lateinit var additionNameEditText: EditText
+    private lateinit var notReturnedEditText: EditText
+    private lateinit var blacklistContainer: LinearLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.manager_blacklist_modify)
 
+        additionNameEditText = findViewById(R.id.addition_name)
+        notReturnedEditText = findViewById(R.id.not_returned)
+        blacklistContainer = findViewById(R.id.blacklist_container)
+
+        findViewById<Button>(R.id.add_blacklist_button).setOnClickListener {
+            addBlacklistItem()
+        }
+
         setupNavigationButtons()
+    }
+
+    private fun addBlacklistItem() {
+        val name = additionNameEditText.text.toString()
+        val notReturned = notReturnedEditText.text.toString()
+
+        if (name.isNotEmpty() && notReturned.isNotEmpty()) {
+            val newItem = layoutInflater.inflate(R.layout.blacklist_item, blacklistContainer, false)
+
+            val nameTextView: TextView = newItem.findViewById(R.id.blacklist_name)
+            val notReturnedTextView: TextView = newItem.findViewById(R.id.blacklist_not_returned)
+
+            nameTextView.text = name
+            notReturnedTextView.text = "미반납: $notReturned"
+
+            blacklistContainer.addView(newItem)
+
+            additionNameEditText.text.clear()
+            notReturnedEditText.text.clear()
+        }
     }
 
     private fun setupNavigationButtons() {
@@ -29,6 +66,10 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
         val managerCameraButton: ImageButton = findViewById(R.id.manager_camera)
         val managerMypageButton: ImageButton = findViewById(R.id.manager_mypage)
         val backButton: ImageButton = findViewById(R.id.back_button)
+        val managerAlarmButton: ImageButton = findViewById(R.id.manager_alarm)
+        managerAlarmButton.setOnClickListener {
+            startActivity(Intent(this, Manager_NotificationActivity::class.java))
+        }
 
         managerListButton.setOnClickListener {
             startActivity(Intent(this, Manager_ListActivity::class.java))

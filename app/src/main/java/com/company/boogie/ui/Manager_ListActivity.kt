@@ -28,6 +28,11 @@ class Manager_ListActivity  : AppCompatActivity() {
         val managerRentalButton: ImageButton = findViewById(R.id.manager_rental)
         val managerCameraButton: ImageButton = findViewById(R.id.manager_camera)
         val managerMypageButton: ImageButton = findViewById(R.id.manager_mypage)
+        val managerAlarmButton: ImageButton = findViewById(R.id.manager_alarm)
+
+        managerAlarmButton.setOnClickListener {
+            startActivity(Intent(this, Manager_NotificationActivity::class.java))
+        }
 
         managerListButton.setOnClickListener {
             startActivity(Intent(this, Manager_ListActivity::class.java))

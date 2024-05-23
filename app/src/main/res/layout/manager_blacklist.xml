@@ -35,14 +35,13 @@
         android:layout_marginStart="48dp"
         android:layout_marginTop="10dp"
         android:text="블랙리스트"
-
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- 뒤로가기 버튼 -->
     <ImageButton
-        android:id="@+id/back_button"
+        android:id="@+id/blacklist_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
@@ -150,7 +149,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="마이페이지"
-
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/manager_mypage"
         app:layout_constraintStart_toStartOf="@id/manager_mypage"
@@ -161,7 +159,7 @@
     <!-- Menu Button -->
 
     <ImageButton
-        android:id="@+id/blacklist_modify"
+        android:id="@+id/go_blacklist_modify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

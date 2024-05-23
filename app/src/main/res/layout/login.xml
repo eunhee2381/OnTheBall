@@ -29,7 +29,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
         android:text="계정 로그인"
-
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,8 +43,8 @@
         android:layout_marginTop="116dp"
         android:background="@drawable/edit_text_background"
         android:hint=" 이메일"
-
         android:inputType="textEmailAddress"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView" />
@@ -59,8 +58,8 @@
         android:background="@drawable/edit_text_background"
         android:ems="10"
         android:hint=" 비밀번호"
-
         android:inputType="textPassword"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email" />
@@ -72,7 +71,6 @@
         android:layout_marginBottom="88dp"
         android:background="@drawable/signinbutton"
         android:text="로그인"
-
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
@@ -124,12 +122,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="계정이 없을 경우"
-
         app:layout_constraintBottom_toBottomOf="@+id/line2"
         app:layout_constraintEnd_toStartOf="@+id/line2"
         app:layout_constraintHorizontal_bias="0.901"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/line2" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,15 +40,15 @@
             android:layout_marginTop="5dp" />
 
         <!-- "X" 닫기 버튼 -->
-        <Button
+        <ImageButton
             android:id="@+id/close_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="3dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="5dp"
             android:background="@android:color/transparent"
-            android:text="X"
+            android:src="@drawable/cancel3"
             android:textSize="23sp"
             android:textStyle="bold" />
 

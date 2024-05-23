@@ -12,6 +12,11 @@ import com.company.boogie.StatusCode
 import com.company.boogie.utils.FirebaseUserUtil
 
 class LoginActivity : AppCompatActivity() {
+
+    companion object { //로그인 사용자,관리자 정보 저장
+        var isAdmin: Boolean = false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login)  // login 레이아웃을 불러옵니다.
@@ -47,12 +52,14 @@ class LoginActivity : AppCompatActivity() {
 
                         // 관리자 계정이면 Manager_ListActivity 실행
                         if (user.idAdmin) {
+                            isAdmin = true
                             Log.d("LoginActivity", "Manager_ListActivity 실행 (관리자 계정)")
                             startActivity(Intent(this, Manager_ListActivity::class.java))
                             finish()
                         }
                         // 사용자면 User_ListActivity 실행
                         else {
+                            isAdmin = false
                             Log.d("LoginActivity", "User_ListActivity 실행 (사용자 계정)")
                             startActivity(Intent(this, User_ListActivity::class.java))
                             finish()
@@ -66,5 +73,4 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-
 }

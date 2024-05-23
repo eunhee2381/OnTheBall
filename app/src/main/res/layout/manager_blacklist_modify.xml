@@ -35,7 +35,6 @@
         android:layout_marginStart="48dp"
         android:layout_marginTop="10dp"
         android:text="블랙리스트 수정"
-
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -55,6 +54,7 @@
 
     <!-- 블랙리스트 항목들 -->
     <LinearLayout
+        android:id="@+id/blacklist_container"
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -65,7 +65,7 @@
         android:padding="16dp"
         tools:ignore="MissingConstraints">
 
-        <!-- 블랙리스트 항목 예시 -->
+        <!-- 초기 블랙리스트 항목 예시 -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -95,7 +95,7 @@
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
-        <!-- 블랙리스트 항목 예시 -->
+        <!-- 초기 블랙리스트 항목 예시 -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -124,7 +124,6 @@
                 android:text="삭제"
                 android:textColor="@android:color/white" />
         </LinearLayout>
-
     </LinearLayout>
 
     <!-- 블랙리스트 추가 섹션 -->
@@ -163,6 +162,15 @@
             android:minLines="5"
             />
 
+        <android.widget.Button
+            android:id="@+id/add_blacklist_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/signinbutton"
+            android:text="추가"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
     <!-- 수정 버튼 -->
@@ -180,7 +188,6 @@
         app:layout_constraintBottom_toTopOf="@id/manager_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 
     <!-- ImageButton and TextView for List -->
     <ImageButton
@@ -281,10 +288,7 @@
         app:layout_constraintStart_toStartOf="@id/manager_mypage"
         app:layout_constraintEnd_toEndOf="@id/manager_mypage" />
 
-    <!-- 블랙리스트 수정 버튼 -->
-
     <!-- Menu Button -->
-
     <ImageButton
         android:id="@+id/manager_menuButton"
         android:layout_width="wrap_content"
