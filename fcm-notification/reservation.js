@@ -38,14 +38,40 @@ function getTokenByUid(uid) {
 /**
     메세지를 사용자의 messages 서브 컬렉션에 저장하는 함수
 */
-function saveMessageToUser(uid, title, message) {
-  const userMessagesRef = db.collection('User').doc(uid).collection('messages');
-  return userMessagesRef.add({
-    title: title,
-    message: message,
-    timestamp: admin.firestore.FieldValue.serverTimestamp()
-  });
+function saveMessageToCurrentUser(title, message) {
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // 현재 로그인된 사용자의 이메일을 가져옵니다.
+  const currentUserEmail = auth.currentUser?.email;
+  if (!currentUserEmail) {
+    return Promise.reject('로그인된 사용자가 없습니다.');
+  }
+
+  // 이메일을 사용하여 User 컬렉션에서 해당 문서를 찾습니다.
+  return db.collection('User').where('email', '==', currentUserEmail).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        return Promise.reject('해당 이메일로 등록된 사용자를 찾을 수 없습니다.');
+      }
+
+      // 문서가 존재하면 해당 사용자의 messages 서브 컬렉션에 접근합니다.
+      const userDoc = snapshot.docs[0];
+      const userMessagesRef = userDoc.ref.collection('messages');
+
+      // messages 컬렉션에 새로운 메시지를 추가합니다.
+      return userMessagesRef.add({
+        title: title,
+        message: message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    })
+    .catch(error => {
+      console.error('메세지 저장 중 오류가 발생했습니다:', error);
+      return Promise.reject(error);
+    });
 }
+
 
 
 /**
@@ -53,22 +79,23 @@ function saveMessageToUser(uid, title, message) {
    ******** 프론트 분들은 이것만 사용하시면 됩니다 ********
 
     // email -> 토큰 값을 가져올 계정의 이메일 (알람 받을 계정)
+    // tl -> 알람 제목(title)
+    // ms -> 알람 내용(message)
+
     // 사용 예
     //sendNotification('user@example.com');
 
     //알람을 저장하는 함수도 통합
 */
 
-function sendNotification(email) {
-  let notificationTitle = '대여 요청 알림';
-  let notificationBody = '신청하신 기자재의 대여 요청이 허가되었습니다';
+function sendNotification(email, tl, ms) {
 
   getUidByEmail(email)
     .then(uid => {
       // 토큰을 가져와서 메시지를 보내고, 메시지를 데이터베이스에 저장
       return Promise.all([
         getTokenByUid(uid),
-        saveMessageToUser(uid, notificationTitle, notificationBody)
+        saveMessageToCurrentUser(tl, ms)
       ])
       .then(([token]) => {
         const message = {
