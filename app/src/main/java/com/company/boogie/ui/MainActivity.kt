@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.company.boogie.R
 import com.company.boogie.StatusCode
+import com.company.boogie.UserManager
 import com.company.boogie.utils.FirebaseUserUtil
 import com.google.firebase.auth.FirebaseUser
 
@@ -20,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     // 로그인 정보에 따라 액티비티 실행
     private fun redirectActivity() {
         val currentUser: FirebaseUser? = FirebaseUserUtil.whoAmI() // 로그인 정보
-        Log.d("MainActivity", "로그인 정보: $currentUser")
+        Log.d("MainActivity", "로그인 정보: [uid]${currentUser?.uid}, [email]${currentUser?.email}")
 
         // 로그인 x - LoginActivity 실행
         if (currentUser == null) {
@@ -37,8 +38,12 @@ class MainActivity : AppCompatActivity() {
                 if (STATUS_CODE == StatusCode.SUCCESS && user != null) {
                     Log.d("MainActivity", "[${uid}]:사용자명[${user.name}]:관리자여부[(${user.isAdmin})] 사용자 정보 성공적으로 가져옴")
 
+                    // 관리자 여부 저장
+                    UserManager.isAdmin = user.isAdmin
+                    Log.d("MainActivity", "isAdmin = ${UserManager.isAdmin}")
+
                     // 관리자 계정이면 Manager_ListActivity 실행
-                    if (user.isAdmin) {
+                    if (UserManager.isAdmin) {
                         Log.d("MainActivity", "Manager_ListActivity 실행 (로그인 o, 관리자 계정)")
                         startActivity(Intent(this, Manager_ListActivity::class.java))
                         finish()

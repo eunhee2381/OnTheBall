@@ -70,7 +70,7 @@
         android:layout_marginTop="-6dp"
         android:background="@drawable/edit_text_background"
         android:ems="10"
-        android:hint=" 비밀번호"
+        android:hint=" 비밀번호 6자리 이상"
         android:inputType="textPassword"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="@+id/email"

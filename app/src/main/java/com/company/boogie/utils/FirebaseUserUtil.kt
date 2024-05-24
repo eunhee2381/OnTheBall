@@ -9,6 +9,8 @@ import com.company.boogie.StatusCode
 import com.company.boogie.models.FirestoreUserModel
 import com.company.boogie.models.User
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 /**
@@ -46,23 +48,28 @@ object FirebaseUserUtil{
      * @param password 새로운 사용자를 위한 비밀번호입니다.
      * @param name 새로운 사용자의 이름입니다.
      * @param birth 새로운 사용자의 생년월일로 "yyyy-MM-dd" 형식입니다.
+     * @param userId 새로운 사용자의 학번입니다.
+     * @param isAdmin 새로운 사용자의 관리자 여부입니다.
+     *
      * @param callback 회원가입 성공 시 상태 코드(STATUS_CODE)와 사용자 ID를 인자로 받는 콜백 함수입니다.
      */
-    fun doSignUp(userEmail: String, password: String, name: String, birth: String, callback: (Int, String?) -> Unit){
+    fun doSignUp(userEmail: String, password: String, name: String, birth: String, userId: String, isAdmin: Boolean, callback: (Int, String?) -> Unit){
         Firebase.auth.createUserWithEmailAndPassword(userEmail, password)
             .addOnCompleteListener { additionTask ->
                 if (additionTask.isSuccessful) {
                     val uid = Firebase.auth.currentUser?.uid.toString()
                     val currentUser = Firebase.auth.currentUser
-                    val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                    val birthDate = Timestamp(parser.parse(birth))
+                    val birthDate: Timestamp = parseBirthdayToTimestamp(birth)
+                    val id = userId.toInt()
+                    Log.d("FirebaseLoginUtils", "DB에 추가할 계정 정보: uid[$uid] name[$name] birthday[$birthDate] studentID[$id] isAdmin[$isAdmin]")
                     val newUser = User(
                         email = userEmail,
                         name = name,
                         birthday = birthDate,
-                        borrowing = "",
-                        isAdmin = false,
+                        studentID = id,
+                        isAdmin = isAdmin,
                         isBanned = false,
+                        borrowing = "",
                         token = ""
                     )
                     userModel.insertUser(uid, newUser) { STATUS_CODE ->
@@ -85,6 +92,19 @@ object FirebaseUserUtil{
                     callback(StatusCode.FAILURE, null)
                 }
             }
+    }
+
+    /**
+     * 생년월일 문자열을 Firebase에 저장할 수 있는 Timestamp로 변환합니다.
+     *
+     */
+    fun parseBirthdayToTimestamp(birthday: String): Timestamp {
+        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+        val date = dateFormat.parse(birthday)
+        val calendar = Calendar.getInstance()
+        calendar.time = date ?: Date()
+
+        return Timestamp(calendar.time)
     }
 
 
@@ -147,6 +167,7 @@ object FirebaseUserUtil{
                 if (STATUS_CODE == StatusCode.SUCCESS) {
                     Firebase.auth.currentUser!!.delete()
                         .addOnCompleteListener {
+                            Log.d("FirebaseLoginUtils", "[${uid}] 계정 삭제 후 탈퇴 시도")
                             // Auth에서 계정 삭제 성공
                             if (it.isSuccessful) {
                                 Log.d("FirebaseLoginUtils", "[${uid}] 계정 삭제 후 탈퇴 성공")

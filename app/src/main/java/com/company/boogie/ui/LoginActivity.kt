@@ -9,13 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.company.boogie.R
 import com.company.boogie.StatusCode
+import com.company.boogie.UserManager
 import com.company.boogie.utils.FirebaseUserUtil
 
 class LoginActivity : AppCompatActivity() {
-
-    companion object {
-        var isAdmin: Boolean = false // 로그인 정보 저장
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,11 +48,11 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("LoginActivity", "[${uid}]: 사용자명 [${user.name}]: 관리자 여부 [${user.isAdmin}] 사용자 정보 성공적으로 가져옴")
 
                         // 관리자 여부 저장
-                        isAdmin = user.isAdmin
-                        Log.d("LoginActivity", "isAdmin = $isAdmin")
+                        UserManager.isAdmin = user.isAdmin
+                        Log.d("LoginActivity", "isAdmin = ${UserManager.isAdmin}")
 
                         // 관리자 계정이면 Manager_ListActivity 실행
-                        if (isAdmin) {
+                        if (UserManager.isAdmin) {
                             Log.d("LoginActivity", "Manager_ListActivity 실행 (관리자 계정)")
                             startActivity(Intent(this, Manager_ListActivity::class.java))
                             finish()

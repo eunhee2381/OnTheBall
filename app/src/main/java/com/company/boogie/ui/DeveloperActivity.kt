@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
 import com.company.boogie.R
+import com.company.boogie.UserManager
 
 class DeveloperActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,10 +28,10 @@ class DeveloperActivity : AppCompatActivity() {
 
     private fun showPopupMenu(view: View) {
         val popup = PopupMenu(this, view)
-        val menuRes = if (LoginActivity.isAdmin) R.menu.managermenu else R.menu.usermenu
+        val menuRes = if (UserManager.isAdmin) R.menu.managermenu else R.menu.usermenu
         popup.menuInflater.inflate(menuRes, popup.menu)
         popup.setOnMenuItemClickListener { item ->
-            if (LoginActivity.isAdmin) {
+            if (UserManager.isAdmin) {
                 handleAdminMenuItemClick(item)
             } else {
                 handleUserMenuItemClick(item)
@@ -96,7 +97,7 @@ class DeveloperActivity : AppCompatActivity() {
     }
 
     private fun navigateToHome() {
-        if (LoginActivity.isAdmin) {
+        if (UserManager.isAdmin) {
             startActivity(Intent(this, Manager_ListActivity::class.java))
         } else {
             startActivity(Intent(this, User_ListActivity::class.java))
