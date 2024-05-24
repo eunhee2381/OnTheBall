@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
 
     <application
         android:allowBackup="true"
@@ -60,6 +68,10 @@
 
         <!-- 매니저 기자재 수정화면 -->
         <activity android:name=".ui.Manager_ModifyActivity"
+            android:exported="true"/>
+
+        <!-- 매니저 기자재 인식화면 -->
+        <activity android:name=".ui.Manager_CameraActivity"
             android:exported="true"/>
 
         <!-- 매니저 마이페이지 화면 -->

@@ -56,4 +56,15 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation (libs.firebase.messaging)
+
+    implementation("org.tensorflow:tensorflow-lite:2.7.0")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.7.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.3.0")
+
+    val camerax_version = "1.1.0"
+    implementation("androidx.camera:camera-core:$camerax_version")
+    implementation("androidx.camera:camera-camera2:$camerax_version")
+    implementation("androidx.camera:camera-lifecycle:$camerax_version")
+    implementation("androidx.camera:camera-view:1.0.0-alpha25")
+    implementation("androidx.camera:camera-extensions:1.0.0-alpha25")
 }
