@@ -18,7 +18,7 @@ class FirestoreProductModel {
      * @param productName 상세 정보를 조회할 기자재의 이름입니다.
      * @param callback 사용자 정보 조회 상태 코드(STATUS_CODE)와 User 객체를 반환하는 콜백 함수입니다.
      */
-    fun getProductsByName(productName: String, callback: (Int, Product?) -> Unit) {
+    fun getProductsById(productName: String, callback: (Int, Product?) -> Unit) {
         val productsRef = db.collection("Product")
         productsRef.whereEqualTo("name", productName).get()
             .addOnSuccessListener { querySnapshot ->
@@ -187,7 +187,7 @@ class FirestoreProductModel {
                         }
                 }
         } else {
-            getProductsByName(productId) { SUCCESS_CODE, product ->
+            getProductsById(productId) { SUCCESS_CODE, product ->
                 if(SUCCESS_CODE == StatusCode.SUCCESS){
                     val updatedData = hashMapOf(
                         "name" to updatedName,
