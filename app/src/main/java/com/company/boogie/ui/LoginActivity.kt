@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    // 수정된 부분: doSignin 메서드
+    // 로그인
     private fun doSignin(email: String, password: String) {
         FirebaseUserUtil.doSignIn(email, password) { STATUS_CODE, uid ->
             if (STATUS_CODE == StatusCode.SUCCESS && uid != null) {
@@ -76,4 +76,5 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
 }

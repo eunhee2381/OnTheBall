@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
 
-        <!-- MainActivity 추가 -->
+        <!-- 메인 액티비티 -->
         <activity android:name=".ui.MainActivity"
             android:exported="true"/>
 

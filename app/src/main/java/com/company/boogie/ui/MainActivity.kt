@@ -3,10 +3,7 @@ package com.company.boogie.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.company.boogie.R
 import com.company.boogie.StatusCode
 import com.company.boogie.utils.FirebaseUserUtil
@@ -15,13 +12,7 @@ import com.google.firebase.auth.FirebaseUser
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main) // ----- 수정 필요 (아이콘 넣은 레이아웃) -----
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        setContentView(R.layout.activity_intro)
 
         redirectActivity() // 로그인 정보에 따라 액티비티 실행
     }
