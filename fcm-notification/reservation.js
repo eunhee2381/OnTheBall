@@ -1,6 +1,9 @@
 const admin = require('firebase-admin');
+const firebase = require('firebase/app');
+require('firebase/auth');
+require('firebase/firestore');
 
-// Firebase Admin SDK 초기화
+// Firebase Admin SDK를 초기화합니다.
 const serviceAccount = require('./serviceAccountKey.json');
 
 admin.initializeApp({
@@ -9,111 +12,91 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-// 사용자 이메일로부터 UID 조회
-function getUidByEmail(email) {
-  return admin.auth().getUserByEmail(email)
-    .then(userRecord => {
-      return userRecord.uid;  // UID 반환
-    })
-    .catch(error => {
-      console.error('Error fetching user data:', error);
-      throw error;
-    });
-}
-
-// uid를 이용하여 토큰 값 가져오기
-//해당 이메일이 있는 컬렉션에서 토큰 값을 가져옴
-
-function getTokenByUid(uid) {
-  return db.collection('User').doc(uid).get()
-    .then(doc => {
-      if (doc.exists) {
-        return doc.data().token;  // 'token' 필드의 값을 반환
-      } else {
-        throw new Error('No user found with UID ' + uid);
-      }
-    });
-}
-
 /**
-    메세지를 사용자의 messages 서브 컬렉션에 저장하는 함수
-*/
-function saveMessageToCurrentUser(title, message) {
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  // 현재 로그인된 사용자의 이메일을 가져옵니다.
-  const currentUserEmail = auth.currentUser?.email;
-  if (!currentUserEmail) {
-    return Promise.reject('로그인된 사용자가 없습니다.');
-  }
-
-  // 이메일을 사용하여 User 컬렉션에서 해당 문서를 찾습니다.
-  return db.collection('User').where('email', '==', currentUserEmail).get()
+ * 주어진 이메일로부터 해당하는 사용자의 토큰 값을 직접 조회합니다.
+ */
+function getTokenByEmail(email) {
+  return db.collection('User').where('email', '==', email).get()
     .then(snapshot => {
       if (snapshot.empty) {
-        return Promise.reject('해당 이메일로 등록된 사용자를 찾을 수 없습니다.');
+        throw new Error('입력한 이메일로 등록된 사용자가 없습니다: ' + email);
       }
-
-      // 문서가 존재하면 해당 사용자의 messages 서브 컬렉션에 접근합니다.
-      const userDoc = snapshot.docs[0];
-      const userMessagesRef = userDoc.ref.collection('messages');
-
-      // messages 컬렉션에 새로운 메시지를 추가합니다.
-      return userMessagesRef.add({
-        title: title,
-        message: message,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .catch(error => {
-      console.error('메세지 저장 중 오류가 발생했습니다:', error);
-      return Promise.reject(error);
+      const doc = snapshot.docs[0];
+      return doc.data().token;  // 해당 문서에서 토큰 필드의 값을 반환합니다.
     });
 }
+
+/**
+    사용자의 messages 서브 컬렉션에 메시지를 저장하는 함수입니다.
+*/
+function saveMessageByEmail(email, title, message) {
+  const db = firebase.firestore();
+
+  // 인자로 받은 이메일을 사용하여 User 컬렉션에서 해당 문서를 찾습니다.
+    return db.collection('User').where('email', '==', email).get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          return Promise.reject('해당 이메일로 등록된 사용자를 찾을 수 없습니다.');
+        }
+
+        // 문서가 존재하면 해당 사용자의 messages 서브 컬렉션에 접근합니다.
+        const userDoc = snapshot.docs[0];
+        const userMessagesRef = userDoc.ref.collection('messages');
+
+        // messages 컬렉션에 새로운 메시지를 추가합니다.
+        return userMessagesRef.add({
+          title: title,
+          message: message,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()  // 메시지의 시간을 서버 시간으로 기록합니다.
+        });
+      })
+      .catch(error => {
+        console.error('메시지 저장 중 오류가 발생했습니다:', error);
+        return Promise.reject(error);
+      });
+  }
 
 
 
 /**
-    위의 함수들과 메세지를 통함하여 만든 함수
-   ******** 프론트 분들은 이것만 사용하시면 됩니다 ********
+    위의 함수들을 통합하여 만든 함수입니다.
+    프론트엔드 개발자는 이 함수만 사용하시면 됩니다.
 
-    // email -> 토큰 값을 가져올 계정의 이메일 (알람 받을 계정)
-    // tl -> 알람 제목(title)
-    // ms -> 알람 내용(message)
+    // email -> 알림을 받을 계정의 이메일
+    // tl -> 알림 제목
+    // ms -> 알림 내용
 
     // 사용 예
     //sendNotification('user@example.com');
 
-    //알람을 저장하는 함수도 통합
+    // 알람을 저장하는 기능도 포함되어 있습니다.
 */
 
-function sendNotification(email, tl, ms) {
+function sendNotification(userEmail, title, message) {
+  getTokenByEmail(userEmail)
+    .then(token => {
+      const notificationMessage = {
+        notification: {
+          title: title,
+          body: message
+        },
+        data: {
+          customKey1: 'customValue1',
+          customKey2: 'customValue2'
+        },
+        token: token
+      };
 
-  getUidByEmail(email)
-    .then(uid => {
-      // 토큰을 가져와서 메시지를 보내고, 메시지를 데이터베이스에 저장
+      // 메시지 전송과 메시지 저장을 동시에 실행합니다.
       return Promise.all([
-        getTokenByUid(uid),
-        saveMessageToCurrentUser(tl, ms)
-      ])
-      .then(([token]) => {
-        const message = {
-          notification: {
-            title: notificationTitle,
-            body: notificationBody
-          },
-          token: token
-        };
-
-        return admin.messaging().send(message);
-      });
+        admin.messaging().send(notificationMessage),
+        saveMessageByEmail(userEmail, title, message)
+      ]);
     })
-    .then(response => {
-      console.log('Successfully sent message:', response);
+    .then(([sendResponse, saveResponse]) => {
+      console.log('성공적으로 메시지가 전송되고 사용자 메시지에 저장되었습니다:', sendResponse);
     })
     .catch(error => {
-      console.error('Error sending message or saving to database:', error);
+      console.error('메시지 전송 또는 저장 중 오류가 발생했습니다:', error);
     });
 }
-
