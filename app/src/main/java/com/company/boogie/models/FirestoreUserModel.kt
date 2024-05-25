@@ -3,6 +3,7 @@ package com.company.boogie.models
 import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
 import com.company.boogie.StatusCode
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * Firestore를 사용하여 사용자 데이터를 관리하는 모델 클래스입니다.
@@ -80,4 +81,49 @@ class FirestoreUserModel {
                 callback(StatusCode.FAILURE, null)
             }
     }
+
+    /**
+     * 현재 로그인 중인 계정이 받은 알람을 불러오는 함수
+     */
+    fun getAlarms(callback: (Int, List<Message>?) -> Unit) {
+        val userEmail = FirebaseAuth.getInstance().currentUser?.email // 현재 로그인한 사용자의 이메일 가져오기
+
+        if (userEmail == null) {
+            Log.w("FirestoreUserModel", "사용자 인증 정보가 없습니다.")
+            callback(StatusCode.FAILURE, null)
+            return
+        }
+
+        db.collection("User")
+            .whereEqualTo("email", userEmail)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    Log.d("FirestoreUserModel", "해당 이메일을 가진 사용자 문서가 없습니다.")
+                    callback(StatusCode.SUCCESS, null)
+                } else {
+                    // 일반적으로 이메일은 고유해야 하므로, 첫 번째 문서만 사용합니다.
+                    val userDocument = documents.documents.first()
+                    userDocument.reference.collection("messages")
+                        .get()
+                        .addOnSuccessListener { messageDocuments ->
+                            val messages = messageDocuments.mapNotNull { document ->
+                                // document.toObject(Message::class.java) 사용하여 각 문서를 Message 객체로 변환
+                                document.toObject(Message::class.java)
+                            }
+                            Log.d("FirestoreUserModel", "메시지 목록을 성공적으로 불러왔습니다.")
+                            callback(StatusCode.SUCCESS, messages)
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("FirestoreUserModel", "메시지 컬렉션을 불러오는 중 에러 발생!!! -> ", e)
+                            callback(StatusCode.FAILURE, null)
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreUserModel", "User 컬렉션을 조회하는 중 에러 발생!!! -> ", e)
+                callback(StatusCode.FAILURE, null)
+            }
+    }
+
 }
