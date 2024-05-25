@@ -27,34 +27,40 @@ function getTokenByEmail(email) {
 }
 
 /**
-    사용자의 messages 서브 컬렉션에 메시지를 저장하는 함수입니다.
-*/
-function saveMessageByEmail(email, title, message) {
-  const db = firebase.firestore();
+ * 이메일 주소를 기반으로 사용자를 찾고 해당 사용자의 'messages' 컬렉션에 메시지를 저장합니다.
+ *
+ * @param {string} userEmail - 메시지를 저장할 사용자의 이메일 주소
+ * @param {string} title - 메시지의 제목
+ * @param {string} message - 메시지의 본문 내용
+ */
+function saveMessageByEmail(userEmail, title, message) {
+  // User 컬렉션에서 주어진 이메일과 일치하는 문서를 조회합니다.
+  db.collection('User').where('email', '==', userEmail).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        console.log('해당 이메일로 등록된 사용자를 찾을 수 없습니다:', userEmail);
+        return;
+      }
 
-  // 인자로 받은 이메일을 사용하여 User 컬렉션에서 해당 문서를 찾습니다.
-    return db.collection('User').where('email', '==', email).get()
-      .then(snapshot => {
-        if (snapshot.empty) {
-          return Promise.reject('해당 이메일로 등록된 사용자를 찾을 수 없습니다.');
-        }
+      // 사용자 문서가 존재하면 해당 문서의 ID를 가져와서 'messages' 서브 컬렉션에 접근합니다.
+      const userDoc = snapshot.docs[0];
+      const messagesRef = userDoc.ref.collection('messages');
 
-        // 문서가 존재하면 해당 사용자의 messages 서브 컬렉션에 접근합니다.
-        const userDoc = snapshot.docs[0];
-        const userMessagesRef = userDoc.ref.collection('messages');
-
-        // messages 컬렉션에 새로운 메시지를 추가합니다.
-        return userMessagesRef.add({
-          title: title,
-          message: message,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()  // 메시지의 시간을 서버 시간으로 기록합니다.
-        });
-      })
-      .catch(error => {
-        console.error('메시지 저장 중 오류가 발생했습니다:', error);
-        return Promise.reject(error);
+      // 'messages' 컬렉션에 새로운 메시지를 추가합니다.
+      return messagesRef.add({
+        title: title,
+        message: message,
+        timestamp: admin.firestore.FieldValue.serverTimestamp() // 메시지가 저장된 시간을 기록합니다.
       });
-  }
+    })
+    .then(() => {
+      console.log('메시지가 성공적으로 저장되었습니다.');
+    })
+    .catch(error => {
+      console.error('메시지 저장 중 오류가 발생했습니다:', error);
+    });
+}
+
 
 
 
