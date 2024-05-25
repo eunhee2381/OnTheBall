@@ -4,6 +4,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
 import com.company.boogie.StatusCode
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.PropertyName
 
 /**
  * Firestore를 사용하여 사용자 데이터를 관리하는 모델 클래스입니다.
@@ -125,5 +130,34 @@ class FirestoreUserModel {
                 callback(StatusCode.FAILURE, null)
             }
     }
+
+    /**
+     * 블랙리스트에 올라가있는 계정의 정보를 불러오는 함수
+     *
+     */
+    fun getBlacklist(callback: (Int, List<User>?) -> Unit) {
+        val db = Firebase.firestore  // Firestore 인스턴스
+
+        db.collection("User")
+            .whereEqualTo("isBanned", true)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    Log.d("FirestoreUserModel", "차단된 사용자가 없습니다.")
+                    callback(StatusCode.SUCCESS, null)
+                } else {
+                    val bannedUsers = documents.mapNotNull { document ->
+                        document.toObject(User::class.java)  // 각 문서를 User 객체로 변환
+                    }
+                    Log.d("FirestoreUserModel", "차단된 사용자 목록을 성공적으로 불러왔습니다.")
+                    callback(StatusCode.SUCCESS, bannedUsers)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreUserModel", "User 컬렉션을 조회하는 중 에러 발생!!! -> ", e)
+                callback(StatusCode.FAILURE, null)
+            }
+    }
+
 
 }
