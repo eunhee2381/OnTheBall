@@ -45,6 +45,7 @@ class Manager_DetailActivity : AppCompatActivity() {
         }
 
         findViewById<ImageButton>(R.id.manager_camera).setOnClickListener {
+            startActivity(Intent(this, Manager_CameraActivity::class.java))
             //startActivity(Intent(this, ::class.java))
         }
 
@@ -81,6 +82,7 @@ class Manager_DetailActivity : AppCompatActivity() {
                 true
             }
             R.id.managermenucamera -> {
+                startActivity(Intent(this, Manager_CameraActivity::class.java))
                 //startActivity(Intent(this, ::class.java))
                 true
             }

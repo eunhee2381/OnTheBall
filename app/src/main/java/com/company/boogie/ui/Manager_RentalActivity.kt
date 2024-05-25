@@ -38,6 +38,7 @@ class Manager_RentalActivity : AppCompatActivity() {
             startActivity(Intent(this, Manager_RentalActivity::class.java))
         }
         managerCameraButton.setOnClickListener {
+            startActivity(Intent(this, Manager_CameraActivity::class.java))
             // 추가하기
         }
         managerMypageButton.setOnClickListener {
@@ -69,6 +70,7 @@ class Manager_RentalActivity : AppCompatActivity() {
                 true
             }
             R.id.managermenucamera -> {
+                startActivity(Intent(this, Manager_CameraActivity::class.java))
                 // 추가하기
                 true
             }
