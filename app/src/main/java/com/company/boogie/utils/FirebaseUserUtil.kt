@@ -12,11 +12,68 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 /**
  * Firebase 인증 관련 작업을 처리하는 유틸리티 singleton 객체입니다.
  */
 object FirebaseUserUtil{
+    fun updateTokenForUser(userEmail: String, callback: (Int) -> Unit) {
+        // FCM에서 토큰을 비동기적으로 요청합니다.
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // 새로운 토큰을 가져옵니다.
+                val newToken = task.result
+
+                // 로그캣에 새 토큰을 출력합니다.
+                Log.d("UpdateToken", "New FCM token: $newToken")
+
+                // Firestore 인스턴스를 가져옵니다.
+                val db = FirebaseFirestore.getInstance()
+
+                // 사용자의 이메일과 일치하는 문서를 찾습니다.
+                db.collection("User").whereEqualTo("email", userEmail)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        if (documents.isEmpty) {
+                            Log.w("UpdateToken", "해당 이메일을 가진 사용자가 없습니다: $userEmail")
+                            callback(StatusCode.FAILURE)
+                            return@addOnSuccessListener
+                        }
+                        for (document in documents) {
+                            // 새 토큰을 문서에 저장합니다.
+                            db.collection("User").document(document.id)
+                                .update("token", newToken)
+                                .addOnSuccessListener {
+                                    Log.d("UpdateToken", "Firestore에 사용자의 이메일 해당 이메일 FCM 토큰이 성공적으로 업데이트되었습니다.")
+                                    callback(StatusCode.SUCCESS)
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w("UpdateToken", "Firestore에 사용자의 이메일 해당 이메일 FCM 토큰 업데이트 중 오류 발생", e)
+                                    callback(StatusCode.FAILURE)
+                                }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("UpdateToken", "해당 이메일을 가진 사용자 문서를 가져오는 중 오류 발생: $userEmail", e)
+                        callback(StatusCode.FAILURE)
+                    }
+            } else {
+                Log.w("UpdateToken", "새 FCM 토큰을 가져오는 데 실패했습니다.", task.exception)
+                callback(StatusCode.FAILURE)
+            }
+        }
+    }
+    fun handleResult(statusCode: Int) {
+        if (statusCode == StatusCode.SUCCESS) {
+            println("토큰 업데이트 성공!")
+        } else {
+            println("토큰 업데이트 실패.")
+        }
+    }
+
 
     private val userModel = FirestoreUserModel()
 
@@ -74,6 +131,7 @@ object FirebaseUserUtil{
                     )
                     userModel.insertUser(uid, newUser) { STATUS_CODE ->
                         if (STATUS_CODE == StatusCode.SUCCESS) {
+                            updateTokenForUser(userEmail, ::handleResult)
                             callback(StatusCode.SUCCESS, uid)
                         } else {
                             currentUser?.delete()
