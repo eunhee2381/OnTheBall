@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupMenu
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +46,7 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
         setupRecyclerView()
         loadBlacklist()
     }
+
     private fun addUserToBlacklist() {
         val email = additionNameEditText.text.toString()
         val notReturned = notReturnedEditText.text.toString()
@@ -65,17 +67,27 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
                     }
                 } else {
                     Log.e("Manager_Blacklist_ModifyActivity", "사용자를 찾을 수 없음: $email")
+                    showUserNotFoundDialog()  // 사용자 없음 다이얼로그 표시
                 }
             }
         } else {
             Log.e("Manager_Blacklist_ModifyActivity", "이메일이나 미반납한 기자재명이 비어 있음")
         }
     }
+
+    private fun showUserNotFoundDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("사용자 없음")
+        builder.setMessage("없는 사용자입니다.")
+        builder.setPositiveButton("확인") { dialog, _ ->
+            dialog.dismiss()  // 다이얼로그 닫기
+        }
+        builder.create().show()
+    }
+
     private fun setupRecyclerView() {
         blacklistRecyclerView.layoutManager = LinearLayoutManager(this)
     }
-
-
 
     private fun loadBlacklist() {
         firestoreUserModel.getBlacklist { status, users ->
