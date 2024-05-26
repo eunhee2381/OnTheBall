@@ -7,13 +7,40 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.company.boogie.R
+import com.company.boogie.StatusCode
+import com.company.boogie.models.FirestoreUserModel
 
 class Manager_BlacklistActivity : AppCompatActivity() {
+    private lateinit var blacklistRecyclerView: RecyclerView
+    private lateinit var blacklistAdapter: BlacklistAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.manager_blacklist)
         setupNavigationButtons()
+        setupRecyclerView()
+
+
+        fetchBlacklistData()
+    }
+    private fun setupRecyclerView() {
+        blacklistRecyclerView = findViewById(R.id.blacklist_recycler_view)
+        blacklistRecyclerView.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun fetchBlacklistData() {
+        val firestoreUserModel = FirestoreUserModel()
+        firestoreUserModel.getBlacklist { status, users ->
+            if (status == StatusCode.SUCCESS && users != null) {
+                blacklistAdapter = BlacklistAdapter(users)
+                blacklistRecyclerView.adapter = blacklistAdapter
+            } else {
+                // Handle the error
+            }
+        }
     }
 
     private fun setupNavigationButtons() {

@@ -158,6 +158,34 @@ class FirestoreUserModel {
                 callback(StatusCode.FAILURE, null)
             }
     }
+    fun getUserByEmail(email: String, callback: (User?) -> Unit) {
+        db.collection("User").whereEqualTo("email", email).get()
+            .addOnSuccessListener { documents ->
+                if (documents != null && !documents.isEmpty) {
+                    val user = documents.documents[0].toObject(User::class.java)
+                    callback(user)
+                } else {
+                    callback(null)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreUserModel", "사용자 정보를 이메일로 불러오는 중 에러 발생!!! -> ", e)
+                callback(null)
+            }
+    }
+
+    fun updateUser(user: User, callback: (Int) -> Unit) {
+        db.collection("User").document(user.email).set(user)
+            .addOnSuccessListener {
+                Log.d("FirestoreUserModel", "사용자 정보 업데이트 성공")
+                callback(StatusCode.SUCCESS)
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreUserModel", "사용자 정보 업데이트 중 에러 발생!!! -> ", e)
+                callback(StatusCode.FAILURE)
+            }
+    }
+
 
 
 }
