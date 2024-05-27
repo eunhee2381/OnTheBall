@@ -56,22 +56,14 @@ class Manager_CameraActivity : AppCompatActivity() {
 
         imageView = findViewById(R.id.imageView)
         textView = findViewById(R.id.textView)
-        val button1: Button = findViewById(R.id.button1)
+        val button1: Button = findViewById(R.id.button1)    // 카메라 버튼
         val button2: Button = findViewById(R.id.button2)
-        val button3: Button = findViewById(R.id.button3) // 카메라 버튼
+        val button3: Button = findViewById(R.id.button3)
 
         // Load TFLite model
         tflite = Interpreter(loadModelFile())
 
         button1.setOnClickListener {
-            openImagePicker()
-        }
-
-        button2.setOnClickListener {
-            detectObjects()
-        }
-
-        button3.setOnClickListener {
             // 카메라 권한이 부여되었는지 확인
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -79,6 +71,14 @@ class Manager_CameraActivity : AppCompatActivity() {
             } else {
                 dispatchTakePictureIntent()
             }
+        }
+
+        button2.setOnClickListener {
+            detectObjects()
+        }
+
+        button3.setOnClickListener {
+            openImagePicker()
         }
     }
 
