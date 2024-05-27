@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.company.boogie.R
 import com.company.boogie.models.User
-import com.company.boogie.utils.FirebaseRequestUtil
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -20,7 +19,7 @@ import com.google.firebase.ktx.Firebase
 class Manager_RentalActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var rentalRequestAdapter: RentalRequestAdapter
-    private val firebaseRequestUtil = FirebaseRequestUtil()
+    private val db: FirebaseFirestore = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,14 +35,18 @@ class Manager_RentalActivity : AppCompatActivity() {
     }
 
     private fun fetchRentalRequests() {
-        val db = Firebase.firestore
-        db.collection("User").whereEqualTo("isBanned", false).get()
+        db.collection("User")
+            .whereEqualTo("isBanned", false)// 블랙리스트에 있다면 가져오지 않음
+            .get()
             .addOnSuccessListener { documents ->
-                val rentalRequests = documents.mapNotNull { it.toObject(User::class.java) }
+                val rentalRequests = documents.mapNotNull {
+                    val user = it.toObject(User::class.java)
+                    if (user.borrowing.isNotEmpty()) user else null//비어있지 않을경우 가져옴
+                }
                 rentalRequestAdapter.submitList(rentalRequests)
             }
             .addOnFailureListener { e ->
-                Log.w("Manager_RentalActivity", "Error fetching rental requests", e)
+                Log.w("Manager_RentalActivity", "대여목록을 가져올때 오류가 발생했습니다!", e)
             }
     }
 

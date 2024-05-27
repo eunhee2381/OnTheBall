@@ -13,7 +13,7 @@ import java.util.Locale
 
 class RentalRequestAdapter : RecyclerView.Adapter<RentalRequestAdapter.RentalRequestViewHolder>() {
 
-    private var rentalRequests: List<User> = listOf()
+    private var rentalRequests: List<User> = listOf()//  대여 요청 리스트를 저장하는 변수
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RentalRequestViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_rental_request, parent, false)
