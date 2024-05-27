@@ -16,6 +16,11 @@ class FirebaseRequestUtil {
      * User컬렉션에 borrowing필드에 대여할 기자재를 삽입합니다.
      * 이미 대여중인 기자재가 있으면 "기자재를 대여할 수 없습니다(대여 중)"를 출력(터미널 상에 출력)
      *
+     * borrowing 필드를 업데이트 할 때 사용자의 borrowAt필드에 대여 시작 시간 업데이트
+     *
+     * 사용자 문서의 borrowed 서브 컬렉션에 대여한 기자재의 이름을 가진 문서에 대여한 시간 업데이트
+     * (대여 기록 표시할 때 사용)
+     *
      */
     fun productToBorrowing(productId: String, callback: (Int) -> Unit) {
         val db = Firebase.firestore
@@ -39,15 +44,24 @@ class FirebaseRequestUtil {
                                 // Product 컬렉션에 존재하던 기존 문서 삭제
                                 productDoc.reference.delete()
 
-                                // 사용자의 borrowing 필드 및 borrowAt 필드 업데이트
-                                val updates = hashMapOf<String, Any>(
-                                    "borrowing" to productId,
-                                    "borrowAt" to Date()  // 현재 시간으로 Date 객체 생성
+                                // 사용자의 borrowed 컬렉션에 문서 추가 (productId 이름으로)
+                                val borrowedData = hashMapOf(
+                                    "borrowedAt" to Date()  // 현재 시간으로 Date 객체 생성
                                 )
-                                userDoc.reference.update(updates).addOnSuccessListener {
-                                    callback(StatusCode.SUCCESS)
+                                userDoc.reference.collection("borrowed").document(productId).set(borrowedData).addOnSuccessListener {
+                                    // 사용자의 borrowing 필드 및 borrowAt 필드 업데이트
+                                    val updates = hashMapOf<String, Any>(
+                                        "borrowing" to productId,
+                                        "borrowAt" to Date()
+                                    )
+                                    userDoc.reference.update(updates).addOnSuccessListener {
+                                        callback(StatusCode.SUCCESS)
+                                    }.addOnFailureListener {
+                                        println("사용자 대여 상태 및 시간 업데이트 실패")
+                                        callback(StatusCode.FAILURE)
+                                    }
                                 }.addOnFailureListener {
-                                    println("사용자 대여 상태 및 시간 업데이트 실패")
+                                    println("사용자의 borrowed 컬렉션 문서 생성 실패")
                                     callback(StatusCode.FAILURE)
                                 }
                             }.addOnFailureListener {
