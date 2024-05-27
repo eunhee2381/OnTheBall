@@ -111,7 +111,7 @@ object FirebaseUserUtil{
      *
      * @param callback 회원가입 성공 시 상태 코드(STATUS_CODE)와 사용자 ID를 인자로 받는 콜백 함수입니다.
      */
-    fun doSignUp(userEmail: String, password: String, name: String, birth: String, userId: String, isAdmin: Boolean, borrowAt: Timestamp, callback: (Int, String?) -> Unit){
+    fun doSignUp(userEmail: String, password: String, name: String, birth: String, userId: String, isAdmin: Boolean, borrowAt: Date, callback: (Int, String?) -> Unit){
         Firebase.auth.createUserWithEmailAndPassword(userEmail, password)
             .addOnCompleteListener { additionTask ->
                 if (additionTask.isSuccessful) {

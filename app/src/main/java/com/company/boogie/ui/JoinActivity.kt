@@ -12,12 +12,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.core.text.util.LocalePreferences.CalendarType
 import com.company.boogie.R
 import com.company.boogie.StatusCode
 import com.company.boogie.UserManager
 import com.company.boogie.utils.FirebaseUserUtil
 import java.util.Calendar
+import java.util.Date
 
 class JoinActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,10 +50,11 @@ class JoinActivity : AppCompatActivity() {
             val password: String = findViewById<EditText>(R.id.password).text.toString() // 비밀번호
             val birthday: String = findViewById<EditText>(R.id.birthDay).text.toString() // 생년월일
             val studentID: String = findViewById<EditText>(R.id.studentID).text.toString() // 학번
+            val borrowAt: Date = Date()
 
             // 계정 정보 예외처리 후 회원가입
             if (validateUser(name, email, password, birthday, studentID)) {
-                doSignUp(isAdmin, name, email, password, birthday, studentID)
+                doSignUp(isAdmin, name, email, password, birthday, studentID, borrowAt)
             }
         }
 
@@ -113,9 +114,9 @@ class JoinActivity : AppCompatActivity() {
     }
 
     // 회원가입 (관리자여부, 이름, 이메일, 비밀번호, 생년월일, 학번)
-    private fun doSignUp(isAdmin: Boolean, name: String, email: String, password: String, birthday: String, studentID: String) {
+    private fun doSignUp(isAdmin: Boolean, name: String, email: String, password: String, birthday: String, studentID: String, borrowAt: Date) {
         Log.d("JoinActivity", "검증 완료 후 회원가입 진행")
-        FirebaseUserUtil.doSignUp(email, password, name, birthday, studentID, isAdmin) { STATUS_CODE, uid ->
+        FirebaseUserUtil.doSignUp(email, password, name, birthday, studentID, isAdmin, borrowAt) { STATUS_CODE, uid ->
             if (STATUS_CODE == StatusCode.SUCCESS && uid != null) {
                 // 회원가입 성공 - 관리자면 Manager_ListActivity, 사용자면 User_ListActivity 실행
                 Toast.makeText(this, "회원가입에 성공했습니다.", Toast.LENGTH_SHORT).show()
