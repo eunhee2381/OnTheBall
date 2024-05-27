@@ -118,7 +118,7 @@ object FirebaseUserUtil{
                     val uid = Firebase.auth.currentUser?.uid.toString()
                     val currentUser = Firebase.auth.currentUser
                     val birthDate: Timestamp = parseBirthdayToTimestamp(birth)
-                    val borrowAt: Date = Date()
+                    var borrowAt: Date = Date()
                     val id = userId.toInt()
                     Log.d("FirebaseLoginUtils", "DB에 추가할 계정 정보: uid[$uid] name[$name] birthday[$birthDate] studentID[$id] isAdmin[$isAdmin]")
                     val newUser = User(

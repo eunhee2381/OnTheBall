@@ -13,5 +13,5 @@ data class User(
     @get:PropertyName("isBanned") @set:PropertyName("isBanned") var isBanned: Boolean = false,
     @get:PropertyName("borrowing") @set:PropertyName("borrowing") var borrowing: String = "",
     @get:PropertyName("token") @set:PropertyName("token") var token: String = "",
-    @PropertyName("borrowAt") val borrowAt: Date = Date()
+    @PropertyName("borrowAt") var borrowAt: Date = Date()
 )

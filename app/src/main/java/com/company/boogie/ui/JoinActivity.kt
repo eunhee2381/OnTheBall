@@ -50,7 +50,7 @@ class JoinActivity : AppCompatActivity() {
             val password: String = findViewById<EditText>(R.id.password).text.toString() // 비밀번호
             val birthday: String = findViewById<EditText>(R.id.birthDay).text.toString() // 생년월일
             val studentID: String = findViewById<EditText>(R.id.studentID).text.toString() // 학번
-            val borrowAt: Date = Date()
+            var borrowAt: Date = Date()
 
             // 계정 정보 예외처리 후 회원가입
             if (validateUser(name, email, password, birthday, studentID)) {
