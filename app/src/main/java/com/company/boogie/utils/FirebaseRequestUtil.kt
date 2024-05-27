@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.util.Date
 
 class FirebaseRequestUtil {
 
@@ -38,11 +39,15 @@ class FirebaseRequestUtil {
                                 // Product 컬렉션에 존재하던 기존 문서 삭제
                                 productDoc.reference.delete()
 
-                                // 사용자의 borrowing 필드 업데이트
-                                userDoc.reference.update("borrowing", productId).addOnSuccessListener {
+                                // 사용자의 borrowing 필드 및 borrowAt 필드 업데이트
+                                val updates = hashMapOf<String, Any>(
+                                    "borrowing" to productId,
+                                    "borrowAt" to Date()  // 현재 시간으로 Date 객체 생성
+                                )
+                                userDoc.reference.update(updates).addOnSuccessListener {
                                     callback(StatusCode.SUCCESS)
                                 }.addOnFailureListener {
-                                    println("사용자 대여 상태 업데이트 실패")
+                                    println("사용자 대여 상태 및 시간 업데이트 실패")
                                     callback(StatusCode.FAILURE)
                                 }
                             }.addOnFailureListener {
@@ -64,6 +69,7 @@ class FirebaseRequestUtil {
             callback(StatusCode.FAILURE)
         }
     }
+
 
 
     /**

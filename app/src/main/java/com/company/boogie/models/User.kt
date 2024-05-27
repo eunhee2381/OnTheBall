@@ -2,6 +2,7 @@ package com.company.boogie.models
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.PropertyName
+import java.util.Date
 
 data class User(
     @PropertyName("email") val email: String = "",
@@ -11,5 +12,6 @@ data class User(
     @get:PropertyName("isAdmin") @set:PropertyName("isAdmin") var isAdmin: Boolean = false,
     @get:PropertyName("isBanned") @set:PropertyName("isBanned") var isBanned: Boolean = false,
     @get:PropertyName("borrowing") @set:PropertyName("borrowing") var borrowing: String = "",
-    @get:PropertyName("token") @set:PropertyName("token") var token: String = ""
+    @get:PropertyName("token") @set:PropertyName("token") var token: String = "",
+    @PropertyName("borrowAt") val borrowAt: Date = Date()
 )

@@ -107,16 +107,18 @@ object FirebaseUserUtil{
      * @param birth 새로운 사용자의 생년월일로 "yyyy-MM-dd" 형식입니다.
      * @param userId 새로운 사용자의 학번입니다.
      * @param isAdmin 새로운 사용자의 관리자 여부입니다.
+     * @param borrowAt 사용자가 기자재를 빌린 시간입니다.
      *
      * @param callback 회원가입 성공 시 상태 코드(STATUS_CODE)와 사용자 ID를 인자로 받는 콜백 함수입니다.
      */
-    fun doSignUp(userEmail: String, password: String, name: String, birth: String, userId: String, isAdmin: Boolean, callback: (Int, String?) -> Unit){
+    fun doSignUp(userEmail: String, password: String, name: String, birth: String, userId: String, isAdmin: Boolean, borrowAt: Timestamp, callback: (Int, String?) -> Unit){
         Firebase.auth.createUserWithEmailAndPassword(userEmail, password)
             .addOnCompleteListener { additionTask ->
                 if (additionTask.isSuccessful) {
                     val uid = Firebase.auth.currentUser?.uid.toString()
                     val currentUser = Firebase.auth.currentUser
                     val birthDate: Timestamp = parseBirthdayToTimestamp(birth)
+                    val borrowAt: Date = Date()
                     val id = userId.toInt()
                     Log.d("FirebaseLoginUtils", "DB에 추가할 계정 정보: uid[$uid] name[$name] birthday[$birthDate] studentID[$id] isAdmin[$isAdmin]")
                     val newUser = User(
@@ -127,7 +129,8 @@ object FirebaseUserUtil{
                         isAdmin = isAdmin,
                         isBanned = false,
                         borrowing = "",
-                        token = ""
+                        token = "",
+                        borrowAt = borrowAt
                     )
                     userModel.insertUser(uid, newUser) { STATUS_CODE ->
                         if (STATUS_CODE == StatusCode.SUCCESS) {
