@@ -38,10 +38,10 @@
         android:layout_marginTop="24dp">
 
         <TextView
-            android:id="@+id/developer1"
+            android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="> 남은희"
+            android:text=">"
             android:textSize="33dp"
             android:gravity="start"
             android:layout_alignParentStart="true"
@@ -49,49 +49,49 @@
             android:layout_marginStart="16dp"/>
 
         <TextView
-            android:id="@+id/developer2"
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="> 김수아"
+            android:text=">"
             android:textSize="33dp"
             android:gravity="start"
-            android:layout_below="@+id/developer1"
+            android:layout_below="@+id/textView1"
             android:layout_alignParentStart="true"
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"/>
 
         <TextView
-            android:id="@+id/developer3"
+            android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="> 김은수"
+            android:text=">"
             android:textSize="33dp"
             android:gravity="start"
-            android:layout_below="@+id/developer2"
+            android:layout_below="@+id/textView2"
             android:layout_alignParentStart="true"
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"/>
 
         <TextView
-            android:id="@+id/developer4"
+            android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="> 박태민"
+            android:text=">"
             android:textSize="33dp"
             android:gravity="start"
-            android:layout_below="@+id/developer3"
+            android:layout_below="@+id/textView3"
             android:layout_alignParentStart="true"
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"/>
 
         <TextView
-            android:id="@+id/developer5"
+            android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="> 원준성"
+            android:text=">"
             android:textSize="33dp"
             android:gravity="start"
-            android:layout_below="@+id/developer4"
+            android:layout_below="@+id/textView4"
             android:layout_alignParentStart="true"
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"/>
