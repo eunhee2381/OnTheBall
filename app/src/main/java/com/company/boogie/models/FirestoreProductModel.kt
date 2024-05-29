@@ -109,6 +109,40 @@ class FirestoreProductModel {
             }
     }
 
+    /**
+     * Firestore에 기자재를 추가합니다
+     *
+     * @param addName 기자재의 이름입니다.
+     * @param addImage 기자재의 이미지 url입니다.
+     * @param addDetail 기자재의 상세 정보입니다.
+     * @param addLocation 기자재의 위치입니다.
+     * @param addClassificationCode 기자재의 상태 코드입니다.
+     * @param addProductId 기자재의 번호입니다.
+     * @param callback 상품 정보 수정 상태 코드(STATUS_CODE)를 반환하는 콜백 함수입니다.
+     */
+    fun addProduct(addProductId: Int, addName: String, addLocation: String, addImage: String, addDetail: String, addClassificationCode: Int, callback: (Int) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+
+        val newProduct = hashMapOf(
+            "productId" to addProductId,
+            "name" to addName,
+            "location" to addLocation,
+            "img" to addImage,
+            "detail" to addDetail,
+            "classificationCode" to addClassificationCode
+        )
+
+        db.collection("Product")
+            .add(newProduct)
+            .addOnSuccessListener { documentReference ->
+                println("DocumentSnapshot added with ID: ${documentReference.id}")
+                callback(StatusCode.SUCCESS) // 성공 콜백 호출
+            }
+            .addOnFailureListener { e ->
+                println("Error adding document: $e")
+                callback(StatusCode.FAILURE) // 실패 콜백 호출
+            }
+    }
 
     /**
      * Firestore에서 기자재 정보를 수정합니다.
