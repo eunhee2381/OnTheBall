@@ -57,61 +57,56 @@
         app:layout_constraintTop_toBottomOf="@id/frame_1"
         app:layout_constraintVertical_bias="0.0" />
 
-    <!-- 기자재 목록 테이블 -->
+    <!-- 기자재 목록 헤더 -->
     <TableLayout
+        android:id="@+id/list_table_layout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/user_list"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search_button">
 
         <!-- 테이블 헤더 -->
         <TableRow
-            android:background="@drawable/modal_background"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="8dp"
-                android:text="기자재"
-                android:textStyle="bold"
-                android:gravity="center" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="8dp"
-                android:text="품목"
-                android:textStyle="bold"
-                android:gravity="center" />
+            android:background="@drawable/modal_background">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:padding="8dp"
-                android:text="이미지"
-                android:textStyle="bold"
-                android:gravity="center" />
+                android:text="기자재"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="8dp"
-                android:text="대여 신청"
-                android:textStyle="bold"
-                android:gravity="center" />
+                android:text="이미지"
+                android:textStyle="bold" />
+
         </TableRow>
 
-        <!-- 더 많은 데이터가 여기에 추가될 수 있습니다 -->
     </TableLayout>
+
+    <!-- 기자재 목록 테이블 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/user_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/list_table_layout"
+        tools:listitem="@layout/list_item" />
 
     <!-- 하단 네비게이션 바 -->
     <ImageButton

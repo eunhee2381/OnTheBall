@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 상단 바 -->
     <RelativeLayout
         android:id="@+id/frame_1"
         android:layout_width="0dp"
@@ -13,18 +12,7 @@
         android:background="#2D9596"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageButton
-            android:id="@+id/manager_alarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="63dp"
-            android:background="@android:color/transparent"
-            android:padding="16dp"
-            android:src="@drawable/alarm" />
-    </RelativeLayout>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/textView"
@@ -40,33 +28,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- 검색 창 -->
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/modal_background"
-        android:hint="검색"
-        android:padding="8dp"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@id/search_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frame_1" />
 
     <!-- 검색 버튼 -->
-    <ImageButton
-        android:id="@+id/search_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/glass"
-        app:layout_constraintBottom_toBottomOf="@+id/editText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frame_1" />
 
     <!-- 기자재 목록 헤더 -->
     <TableLayout
@@ -75,20 +38,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:paddingTop="16dp"
+        android:paddingEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_button">
+        app:layout_constraintTop_toBottomOf="@+id/frame_1">
 
         <!-- 테이블 헤더 -->
-        <TableRow
-            android:background="@drawable/modal_background">
+        <TableRow android:background="@drawable/modal_background">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:padding="8dp"
                 android:text="기자재"
                 android:textStyle="bold" />
@@ -101,27 +63,34 @@
                 android:text="이미지"
                 android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="대여 현황"
+                android:textStyle="bold" />
         </TableRow>
 
     </TableLayout>
 
     <!-- 기자재 목록 테이블 -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_recycler_view"
+        android:id="@+id/detail_list_recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/manager_list"
+        app:layout_constraintBottom_toTopOf="@+id/user_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/list_table_layout"
-        tools:listitem="@layout/list_item" />
+        tools:listitem="@layout/detail_list_item" />
 
     <!-- 하단 네비게이션 바 -->
     <ImageButton
-        android:id="@+id/manager_list"
+        android:id="@+id/user_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="589dp"
@@ -130,97 +99,97 @@
         android:padding="16dp"
         android:src="@drawable/list"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/manager_rental"
+        app:layout_constraintEnd_toStartOf="@id/user_rental"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frame_1" />
 
     <TextView
-        android:id="@+id/ManagerList"
+        android:id="@+id/UserList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="기자재 목록"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@id/manager_list"
-        app:layout_constraintStart_toStartOf="@id/manager_list"
-        app:layout_constraintTop_toBottomOf="@id/manager_list" />
+        app:layout_constraintTop_toBottomOf="@id/user_list"
+        app:layout_constraintStart_toStartOf="@id/user_list"
+        app:layout_constraintEnd_toEndOf="@id/user_list"/>
 
     <!-- ImageButton and TextView for Rental -->
     <ImageButton
-        android:id="@+id/manager_rental"
+        android:id="@+id/user_rental"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:padding="16dp"
         android:src="@drawable/rental"
-        app:layout_constraintBottom_toBottomOf="@id/manager_list"
-        app:layout_constraintEnd_toStartOf="@id/manager_camera"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/manager_list" />
+        app:layout_constraintStart_toEndOf="@id/user_list"
+        app:layout_constraintEnd_toStartOf="@id/user_alarm"
+        app:layout_constraintBottom_toBottomOf="@id/user_list"
+        app:layout_constraintHorizontal_weight="1"/>
 
     <TextView
-        android:id="@+id/ManagerRental"
+        android:id="@+id/UserRental"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="기자재 대여"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@id/manager_rental"
-        app:layout_constraintStart_toStartOf="@id/manager_rental"
-        app:layout_constraintTop_toBottomOf="@id/manager_rental" />
+        app:layout_constraintTop_toBottomOf="@id/user_rental"
+        app:layout_constraintStart_toStartOf="@id/user_rental"
+        app:layout_constraintEnd_toEndOf="@id/user_rental"/>
 
     <!-- ImageButton and TextView for Camera -->
     <ImageButton
-        android:id="@+id/manager_camera"
+        android:id="@+id/user_alarm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:padding="16dp"
-        android:src="@drawable/camera"
-        app:layout_constraintBottom_toBottomOf="@id/manager_rental"
-        app:layout_constraintEnd_toStartOf="@id/manager_mypage"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/manager_rental" />
+        android:src="@drawable/alarm"
+        app:layout_constraintStart_toEndOf="@id/user_rental"
+        app:layout_constraintEnd_toStartOf="@id/user_mypage"
+        app:layout_constraintBottom_toBottomOf="@id/user_rental"
+        app:layout_constraintHorizontal_weight="1"/>
 
     <TextView
-        android:id="@+id/ManagerCamera"
+        android:id="@+id/UserAlarm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="기자재 인식"
+        android:text="알림"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@id/manager_camera"
-        app:layout_constraintStart_toStartOf="@id/manager_camera"
-        app:layout_constraintTop_toBottomOf="@id/manager_camera" />
+        app:layout_constraintTop_toBottomOf="@id/user_alarm"
+        app:layout_constraintStart_toStartOf="@id/user_alarm"
+        app:layout_constraintEnd_toEndOf="@id/user_alarm"/>
 
     <!-- ImageButton and TextView for Mypage -->
     <ImageButton
-        android:id="@+id/manager_mypage"
+        android:id="@+id/user_mypage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:padding="16dp"
         android:src="@drawable/mypage"
-        app:layout_constraintBottom_toBottomOf="@id/manager_camera"
+        app:layout_constraintStart_toEndOf="@id/user_alarm"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/manager_camera" />
+        app:layout_constraintBottom_toBottomOf="@id/user_alarm"
+        app:layout_constraintHorizontal_weight="1"/>
 
     <TextView
-        android:id="@+id/ManagerMypage"
+        android:id="@+id/UserMypage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="마이페이지"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@id/manager_mypage"
-        app:layout_constraintStart_toStartOf="@id/manager_mypage"
-        app:layout_constraintTop_toBottomOf="@id/manager_mypage" />
+        app:layout_constraintTop_toBottomOf="@id/user_mypage"
+        app:layout_constraintStart_toStartOf="@id/user_mypage"
+        app:layout_constraintEnd_toEndOf="@id/user_mypage"/>
 
     <!-- Menu Button -->
     <ImageButton
-        android:id="@+id/manager_menuButton"
+        android:id="@+id/user_menuButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"

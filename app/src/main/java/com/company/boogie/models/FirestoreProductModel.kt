@@ -1,13 +1,18 @@
 package com.company.boogie.models
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
 import com.company.boogie.StatusCode
-import com.google.firebase.firestore.Query
-import android.net.http.UrlRequest.Status
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.toObject
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import java.util.UUID
+import com.google.firebase.storage.ktx.storage
 
 class FirestoreProductModel {
     private val db = FirebaseFirestore.getInstance()
@@ -299,6 +304,143 @@ class FirestoreProductModel {
                 Log.w("FirestoreProductModel", "[$userEmail] 사용자 검색 중 에러 발생", exception)
                 callback(StatusCode.FAILURE)
             }
+    }
+
+    /**
+     * Firestore에서 productId가 1인 기자재 정보를 조회합니다.
+     * RecyclerView에서 classificationCode 당 productId가 1인 기자재 리스트를 띄우기 위함
+     *
+     * @param callback 기자재 정보 조회 상태 코드(STATUS_CODE)와 기자재 리스트를 반환하는 콜백 함수입니다.
+     */
+    fun getProductsByProductId1(callback: (Int, List<Product>?) -> Unit) {
+        val productsRef = db.collection("Product")
+        val borrowingsRef = db.collection("Borrowing")
+
+        val products = mutableListOf<Product>()
+        val tasks = mutableListOf<Task<QuerySnapshot>>()
+
+        // productId=1인 기자재를 Product, Borrowing 컬렉션에서 찾음
+        tasks.add(productsRef.whereEqualTo("productId", 1).get())
+        tasks.add(borrowingsRef.whereEqualTo("productId", 1).get())
+
+        Tasks.whenAllSuccess<QuerySnapshot>(tasks).addOnSuccessListener { results ->
+            Log.d("FirestoreProductModel", "productId=1인 기자재를 firestore에서 불러오기 성공")
+
+            // 찾은 결과를 리스트에 넣음
+            for (result in results) {
+                for (document in result) {
+                    val product = document.toObject<Product>()
+                    products.add(product) // 찾은 결과
+                }
+            }
+
+            // 찾은 결과를 classificationCode로 정렬
+            val sortedProducts = products.sortedBy { it.classificationCode }
+
+            // 결과 리턴
+            if (sortedProducts.isNotEmpty()) {
+                Log.d("FirestoreProductModel", "productId=1인 기자재를 리턴")
+                callback(StatusCode.SUCCESS, sortedProducts)
+            }
+            else {
+                Log.w("FirestoreProductModel", "productId=1인 기자재 리스트가 비어있음")
+                callback(StatusCode.FAILURE, null)
+            }
+        }.addOnFailureListener { e ->
+            Log.w("FirestoreProductModel", "productId=1인 기자재를 firestore에서 불러오기 실패", e)
+            callback(StatusCode.FAILURE, null)
+        }
+    }
+
+    /**
+     * Firestore에서 특정 classificicationCode의 기자재 정보를 조회합니다.
+     * RecyclerView에서 classificationCode에 해당하는 기자재 리스트를 띄우기 위함
+     *
+     * @param classficationCode 정보를 조회할 기자재의 종류 코드입니다.
+     * @param callback 기자재 정보 조회 상태 코드(STATUS_CODE)와 기자재 리스트를 반환하는 콜백 함수입니다.
+     */
+    fun getProductsByClassificationCode(classificationCode: Int, callback: (Int, List<Product>?) -> Unit) {
+        val productsRef = db.collection("Product")
+        val borrowingsRef = db.collection("Borrowing")
+
+        val products = mutableListOf<Product>()
+        val tasks = mutableListOf<Task<QuerySnapshot>>()
+
+        // classificationCode에 해당하는 기자재를 Product, Borrowing 컬렉션에서 찾음
+        val productsTask = productsRef.whereEqualTo("classificationCode", classificationCode).get()
+        tasks.add(productsTask)
+        val borrowingsTask = borrowingsRef.whereEqualTo("classificationCode", classificationCode).get()
+        tasks.add(borrowingsTask)
+
+        Tasks.whenAllSuccess<QuerySnapshot>(tasks).addOnSuccessListener { results ->
+            Log.d("FirestoreProductModel", "classificationCode에 해당하는 기자재를 firestore에서 불러오기 성공")
+
+            // Product 컬렉션에서 찾은 결과를 리스트에 넣음
+            val productsDocuments = results[0]
+            for (document in productsDocuments) {
+                val product = document.toObject<Product>().apply {
+                    canBorrow = true
+                    documentId = document.id
+                }
+                products.add(product)
+            }
+
+            // Borrowing 컬렉션에서 찾은 결과를 리스트에 넣음
+            val borrowingsDocuments = results[1]
+            for (document in borrowingsDocuments) {
+                val product = document.toObject<Product>().apply {
+                    canBorrow = false
+                    documentId = document.id
+                }
+                products.add(product)
+            }
+
+            // 찾은 결과를 productId로 정렬
+            val sortedProducts = products.sortedBy { it.productId }
+
+            // 결과 리턴
+            if (sortedProducts.isNotEmpty()) {
+                Log.d("FirestoreProductModel", "classificationCode에 해당하는 기자재를 리턴")
+                callback(StatusCode.SUCCESS, sortedProducts)
+            }
+            else {
+                Log.w("FirestoreProductModel", "classificationCode에 해당하는 기자재 리스트가 비어있음")
+                callback(StatusCode.FAILURE, null)
+            }
+        }.addOnFailureListener { e ->
+            Log.w("FirestoreProductModel", "classificationCode에 해당하는 기자재를 firestore에서 불러오기 실패", e)
+            callback(StatusCode.FAILURE, null)
+        }
+    }
+
+    /**
+     * Storage에서 이미지 파일 경로인 img 값을 읽어 Bitmap을 리턴합니다.
+     *
+     * @param imgUrl 비트맵으로 변환할 이미지 파일 경로입니다.
+     * @param callback 상태 코드(STATUS_CODE)를 반환하는 콜백 함수입니다.
+     */
+    fun getProductImgBitmap(imgUrl: String, callback: (Int, Bitmap?) -> Unit) {
+        val imgRef = Firebase.storage.getReferenceFromUrl(imgUrl)
+        if (imgRef == null) {
+            Log.w("FirestoreProductModel", "이미지 레퍼런스가 null")
+            callback(StatusCode.FAILURE, null)
+        }
+        else {
+            imgRef.getBytes(Long.MAX_VALUE).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
+                if (bitmap == null) {
+                    Log.w("FirestoreProductModel", "이미지 비트맵 변환 실패")
+                    callback(StatusCode.FAILURE, null)
+                }
+                else {
+                    Log.d("FirestoreProductModel", "이미지 비트맵 변환 성공")
+                    callback(StatusCode.SUCCESS, bitmap)
+                }
+            }.addOnFailureListener {e ->
+                Log.w("FirestoreProductModel", "이미지 다운로드 실패", e)
+                callback(StatusCode.FAILURE, null)
+            }
+        }
     }
 
 }

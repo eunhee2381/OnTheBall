@@ -17,6 +17,7 @@ import com.company.boogie.R
 import com.company.boogie.StatusCode
 import com.company.boogie.models.FirestoreUserModel
 import com.company.boogie.models.User
+import com.company.boogie.ui.adapter.BlacklistModifyAdapter
 
 class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
 

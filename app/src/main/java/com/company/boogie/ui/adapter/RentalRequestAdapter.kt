@@ -1,4 +1,4 @@
-package com.company.boogie.ui
+package com.company.boogie.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
@@ -15,77 +14,62 @@ import com.company.boogie.R
 import com.company.boogie.StatusCode
 import com.company.boogie.models.FirestoreProductModel
 import com.company.boogie.models.Product
-import com.company.boogie.ui.adapter.ListAdapter
+import com.company.boogie.ui.adapter.DetailListAdapter
 
-class User_ListActivity : AppCompatActivity() {
-    private lateinit var listRecyclerView: RecyclerView
-    private lateinit var listAdapter: ListAdapter
+class User_DetailListActivity : AppCompatActivity() {
+    private lateinit var detailListRecyclerView: RecyclerView
+    private lateinit var detailListAdapter: DetailListAdapter
     private lateinit var productList: List<Product>
+    private var classficationCode: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.user_list)
+        setContentView(R.layout.user_detail_list)
 
         setupNavigationButtons()
-
+        classficationCode = intent?.getIntExtra("classificationCode", -1) ?: -1
         setupRecyclerView() // RecyclerView 설정
-
-        // 검색 버튼 클릭 이벤트
-        findViewById<ImageButton>(R.id.search_button).setOnClickListener {
-            // 검색 query 가져와 검색 처리 로직
-            val query = findViewById<EditText>(R.id.editText).text.toString()
-            filterProducts(query)
-        }
     }
 
     // RecyclerView 설정
     private fun setupRecyclerView() {
-        listRecyclerView = findViewById(R.id.list_recycler_view)
-        listRecyclerView.layoutManager = LinearLayoutManager(this)
+        detailListRecyclerView = findViewById(R.id.detail_list_recycler_view)
+        detailListRecyclerView.layoutManager = LinearLayoutManager(this)
 
         productList = emptyList()
-        listAdapter = ListAdapter(productList)
-        listAdapter.setOnItemClickListener { showDetailList(it) }
+        detailListAdapter = DetailListAdapter(productList)
+        detailListAdapter.setOnItemClickListener(object: DetailListAdapter.OnItemClickListener {
+            override fun onItemClick(item_document_id: String, item_can_borrow: Boolean) {
+                showDetail(item_document_id, item_can_borrow)
+            }
+        })
 
-        listRecyclerView.adapter = listAdapter
+        detailListRecyclerView.adapter = detailListAdapter
         fetchListData()
     }
 
     // RecyclerView에 데이터 표시
     private fun fetchListData() {
         val firestoreProductModel = FirestoreProductModel()
-        firestoreProductModel.getProductsByProductId1 { STATUS_CODE, products ->
+        firestoreProductModel.getProductsByClassificationCode(classficationCode) { STATUS_CODE, products ->
             if (STATUS_CODE == StatusCode.SUCCESS && products != null) {
-                Log.d("User_ListActivity", "리사이클러뷰 데이터 가져오기 성공 products=${products}")
+                Log.d("User_DetailListActivity", "리사이클러뷰 데이터 가져오기 성공 products=${products}")
                 productList = products
-                listAdapter.updateList(productList)
+                detailListAdapter.updateList(productList)
             }
             else {
-                Log.w("User_ListActivity", "리사이클러뷰 데이터 가져오기 실패")
+                Log.w("User_DetailListActivity", "리사이클러뷰 데이터 가져오기 실패")
             }
         }
     }
 
-    // 검색 기능
-    private fun filterProducts(query: String) {
-        val noSpaceQuery = query.replace(" ", "") //검색어 공백 제거
-        val filteredList = if (noSpaceQuery.isEmpty()) { // 검색어 입력 x - 원래 리스트 리턴
-            productList
-        } else { // 검색어 입력 o - 검색 결과에 해당하는 리스트를 필터링해 리턴
-            productList.filter {// ex) "아두이노우노"로 검색 시 "아두이노 우노"를 리턴하도록 함
-                it.name.replace(" ", "").contains(noSpaceQuery, ignoreCase = true)
-            }
-        }
-
-        listAdapter.updateList(filteredList)
-    }
-
-    // 리스트 클릭 시 디테일 리스트로 이동 (클릭한 기자재의 classificationCode에 해당하는 기자재 리스트를 보여줌)
-    private fun showDetailList(classificationCode: Int) {
-        Log.d("User_ListActivity", "리사이클러뷰 클릭으로 액티비티 전환")
-        val detailListIntent = Intent(this, User_DetailListActivity::class.java)
-        detailListIntent.putExtra("classificationCode", classificationCode)
-        startActivity(detailListIntent)
+    // 리스트 클릭 시 해당 상품 디테일 페이지로 이동
+    private fun showDetail(documentId: String, canBorrow: Boolean) {
+        Log.d("User_DetailListActivity", "리사이클러뷰 클릭으로 액티비티 전환")
+        val detailIntent = Intent(this, User_DetailActivity::class.java)
+        detailIntent.putExtra("documentId", documentId)
+        detailIntent.putExtra("canBorrow", canBorrow)
+        startActivity(detailIntent)
     }
 
     private fun setupNavigationButtons() {

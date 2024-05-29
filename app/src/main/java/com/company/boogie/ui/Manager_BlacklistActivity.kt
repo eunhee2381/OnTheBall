@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.company.boogie.R
 import com.company.boogie.StatusCode
 import com.company.boogie.models.FirestoreUserModel
+import com.company.boogie.ui.adapter.BlacklistAdapter
 
 class Manager_BlacklistActivity : AppCompatActivity() {
     private lateinit var blacklistRecyclerView: RecyclerView
