@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="48dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/modal_background"
         android:hint="검색"
         android:padding="8dp"
@@ -61,12 +61,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:background="@android:color/transparent"
         android:src="@drawable/glass"
-        app:layout_constraintTop_toBottomOf="@id/frame_1"
+        app:layout_constraintBottom_toBottomOf="@+id/editText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/editText" />
+        app:layout_constraintTop_toBottomOf="@id/frame_1" />
 
     <!-- 기자재 목록 테이블 -->
     <TableLayout
@@ -89,7 +89,6 @@
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="기자재"
-
                 android:textStyle="bold" />
 
             <TextView
@@ -98,7 +97,6 @@
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="품목"
-
                 android:textStyle="bold" />
 
             <TextView
@@ -107,7 +105,6 @@
                 android:layout_weight="2"
                 android:padding="8dp"
                 android:text="이미지"
-
                 android:textStyle="bold" />
 
             <TextView
@@ -116,7 +113,6 @@
                 android:layout_weight="1"
                 android:padding="8dp"
                 android:text="대여 신청"
-
                 android:textStyle="bold" />
         </TableRow>
 
@@ -145,7 +141,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="기자재 목록"
-
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@id/manager_list"
         app:layout_constraintStart_toStartOf="@id/manager_list"
@@ -170,7 +165,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="기자재 대여"
-
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@id/manager_rental"
         app:layout_constraintStart_toStartOf="@id/manager_rental"
@@ -195,7 +189,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="기자재 인식"
-
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@id/manager_camera"
         app:layout_constraintStart_toStartOf="@id/manager_camera"
@@ -220,7 +213,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="마이페이지"
-
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@id/manager_mypage"
         app:layout_constraintStart_toStartOf="@id/manager_mypage"

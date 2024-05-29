@@ -5,26 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Auto layout, variables, and unit scale are not yet supported -->
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="기자재 총 개수"
-        android:textSize="19sp"
-        app:layout_constraintBottom_toBottomOf="@+id/count"
-        app:layout_constraintStart_toStartOf="@+id/location"
-        app:layout_constraintTop_toTopOf="@+id/count" />
-
     <RelativeLayout
         android:id="@+id/frame_1"
-        android:layout_width="412dp"
+        android:layout_width="0dp"
         android:layout_height="54dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:background="#2D9596"
-        android:clipToOutline="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -44,11 +29,9 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
-        android:text="기자재 수정"
+        android:text="기자재 추가"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -79,7 +62,6 @@
         app:layout_constraintStart_toStartOf="@id/manager_list"
         app:layout_constraintEnd_toEndOf="@id/manager_list"/>
 
-    <!-- ImageButton and TextView for Rental -->
     <ImageButton
         android:id="@+id/manager_rental"
         android:layout_width="0dp"
@@ -103,7 +85,6 @@
         app:layout_constraintStart_toStartOf="@id/manager_rental"
         app:layout_constraintEnd_toEndOf="@id/manager_rental"/>
 
-    <!-- ImageButton and TextView for Camera -->
     <ImageButton
         android:id="@+id/manager_camera"
         android:layout_width="0dp"
@@ -127,7 +108,7 @@
         app:layout_constraintStart_toStartOf="@id/manager_camera"
         app:layout_constraintEnd_toEndOf="@id/manager_camera"/>
 
-    <!-- ImageButton and TextView for Mypage -->
+
     <ImageButton
         android:id="@+id/manager_mypage"
         android:layout_width="0dp"
@@ -151,7 +132,6 @@
         app:layout_constraintStart_toStartOf="@id/manager_mypage"
         app:layout_constraintEnd_toEndOf="@id/manager_mypage"/>
 
-    <!-- Menu Button -->
     <ImageButton
         android:id="@+id/manager_menuButton"
         android:layout_width="wrap_content"
@@ -163,10 +143,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-
     <EditText
-        android:id="@+id/product"
+        android:id="@+id/product_name"
         android:layout_width="380dp"
         android:layout_height="50dp"
         android:layout_marginTop="72dp"
@@ -175,7 +153,6 @@
         android:padding="8dp"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView" />
 
@@ -188,10 +165,9 @@
         android:hint="기자재 위치"
         android:padding="8dp"
         android:inputType="text"
-        app:layout_constraintEnd_toEndOf="@+id/product"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="@+id/product"
-        app:layout_constraintTop_toBottomOf="@+id/product" />
+        app:layout_constraintEnd_toEndOf="@+id/product_name"
+        app:layout_constraintStart_toStartOf="@+id/product_name"
+        app:layout_constraintTop_toBottomOf="@+id/product_name" />
 
     <EditText
         android:id="@+id/count"
@@ -199,89 +175,91 @@
         android:layout_height="50dp"
         android:layout_marginTop="160dp"
         android:background="@drawable/edit_text_background"
-        android:hint="개수"
-        android:padding="8dp"
+        android:hint="번호"
         android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@+id/product"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/product"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/product_name"
         app:layout_constraintTop_toBottomOf="@id/textView" />
 
     <EditText
         android:id="@+id/remain"
         android:layout_width="120dp"
         android:layout_height="50dp"
+        android:layout_marginTop="205dp"
         android:background="@drawable/edit_text_background"
-        android:hint="남은 개수"
-        android:padding="8dp"
+        android:hint="코드"
         android:inputType="number"
+        android:padding="8dp"
         app:layout_constraintBottom_toTopOf="@+id/explain"
-        app:layout_constraintEnd_toEndOf="@+id/product"
-        app:layout_constraintStart_toStartOf="@+id/count"
-        app:layout_constraintTop_toBottomOf="@id/count" />
+        app:layout_constraintEnd_toEndOf="@+id/location"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
         android:id="@+id/explain"
         android:layout_width="380dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="249dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-6dp"
         android:background="@drawable/edit_text_background"
         android:gravity="top|start"
         android:hint="설명"
         android:padding="8dp"
         android:inputType="textMultiLine"
-        android:maxLines="10"
-        app:layout_constraintEnd_toEndOf="@+id/product"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/product"
-        app:layout_constraintTop_toBottomOf="@id/textView" />
+        android:maxLines="2"
+        android:minLines="2"
+        app:layout_constraintEnd_toEndOf="@+id/product_name"
+        app:layout_constraintStart_toStartOf="@+id/product_name"
+        app:layout_constraintTop_toBottomOf="@id/remain" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="-3dp"
+        android:contentDescription="Product Image"
+        app:layout_constraintTop_toBottomOf="@id/explain"
+        app:layout_constraintStart_toStartOf="@id/explain"
+        app:layout_constraintEnd_toEndOf="@id/explain"
+        app:layout_constraintBottom_toTopOf="@id/product_add"
+        android:layout_marginBottom="16dp"/>
 
     <android.widget.Button
-        android:id="@+id/change"
+        android:id="@+id/product_add"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginStart="84dp"
         android:layout_marginBottom="124dp"
         android:background="@drawable/signinbutton"
-        android:text=" 수정"
-        android:textSize="19sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <android.widget.Button
-        android:id="@+id/delete"
-        android:layout_width="90dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="84dp"
-        android:layout_marginBottom="124dp"
-        android:background="@drawable/signinbutton"
-        android:text=" 삭제"
+        android:text=" 추가"
         android:textSize="19sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:onClick="showDeleteDialog" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <android.widget.Button
         android:id="@+id/photo2"
         android:layout_width="90dp"
         android:layout_height="50dp"
-        android:layout_marginStart="11dp"
         android:layout_marginTop="6dp"
         android:background="@drawable/signinbutton"
-        android:text="사진 수정"
+        android:text="사진 추가"
         android:textSize="19sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.02"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frame_1" />  <!-- 가운데 정렬 -->
+        app:layout_constraintStart_toStartOf="@id/product_name"
+        app:layout_constraintTop_toBottomOf="@+id/frame_1" />
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="기자재 번호"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/count"
+        app:layout_constraintStart_toStartOf="@+id/location"
+        app:layout_constraintTop_toTopOf="@+id/count" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="대여 후 남은 개수"
+        android:text="기자재 분류 코드"
         android:textSize="19sp"
         app:layout_constraintStart_toStartOf="@+id/textView3"
         app:layout_constraintTop_toTopOf="@id/remain" />

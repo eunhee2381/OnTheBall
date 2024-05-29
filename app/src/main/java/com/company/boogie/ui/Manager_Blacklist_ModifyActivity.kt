@@ -42,6 +42,10 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
             navigateToBlacklistActivity()
         }
 
+        findViewById<ImageButton>(R.id.back_button).setOnClickListener {
+            navigateToBlacklistActivity()
+        }
+
         setupNavigationButtons()
         setupRecyclerView()
         loadBlacklist()
@@ -118,8 +122,6 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
         managerMenuButton.setOnClickListener {
             showPopupMenu(it)
         }
-
-        // Add other navigation buttons setup
     }
 
     private fun showPopupMenu(view: View) {

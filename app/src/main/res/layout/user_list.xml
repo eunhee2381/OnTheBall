@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="48dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/modal_background"
         android:hint="검색"
         android:padding="8dp"
@@ -44,8 +44,6 @@
         app:layout_constraintTop_toBottomOf="@id/frame_1" />
 
     <!-- 검색 버튼 -->
-
-    <!-- 기자재 목록 테이블 -->
     <ImageButton
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
@@ -59,6 +57,7 @@
         app:layout_constraintTop_toBottomOf="@id/frame_1"
         app:layout_constraintVertical_bias="0.0" />
 
+    <!-- 기자재 목록 테이블 -->
     <TableLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
