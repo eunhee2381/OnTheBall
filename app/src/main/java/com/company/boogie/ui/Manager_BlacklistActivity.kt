@@ -27,7 +27,7 @@ class Manager_BlacklistActivity : AppCompatActivity() {
         fetchBlacklistData()
     }
     private fun setupRecyclerView() {
-        blacklistRecyclerView = findViewById(R.id.blacklist_recycler_view)
+        blacklistRecyclerView = findViewById(R.id.blacklist_recyclerview)
         blacklistRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 

@@ -2,19 +2,52 @@ package com.company.boogie.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
-import android.widget.Button
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.company.boogie.R
+import com.company.boogie.models.User
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class Manager_RentalActivity : AppCompatActivity() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var rentalRequestAdapter: RentalRequestAdapter
+    private val db: FirebaseFirestore = Firebase.firestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.manager_rental)
         setupNavigationButtons()
+
+        recyclerView = findViewById(R.id.recyclerView_rentalRequests)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        rentalRequestAdapter = RentalRequestAdapter()
+        recyclerView.adapter = rentalRequestAdapter
+
+        fetchRentalRequests()
+    }
+
+    private fun fetchRentalRequests() {
+        db.collection("User")
+            .whereEqualTo("isBanned", false)// 블랙리스트에 있다면 가져오지 않음
+            .get()
+            .addOnSuccessListener { documents ->
+                val rentalRequests = documents.mapNotNull {
+                    val user = it.toObject(User::class.java)
+                    if (user.borrowing.isNotEmpty()) user else null//비어있지 않을경우 가져옴
+                }
+                rentalRequestAdapter.submitList(rentalRequests)
+            }
+            .addOnFailureListener { e ->
+                Log.w("Manager_RentalActivity", "대여목록을 가져올때 오류가 발생했습니다!", e)
+            }
     }
 
     private fun setupNavigationButtons() {
@@ -23,7 +56,6 @@ class Manager_RentalActivity : AppCompatActivity() {
             showPopupMenu(it)
         }
 
-        // 버튼들 인식
         val managerListButton: ImageButton = findViewById(R.id.manager_list)
         val managerRentalButton: ImageButton = findViewById(R.id.manager_rental)
         val managerCameraButton: ImageButton = findViewById(R.id.manager_camera)
@@ -39,7 +71,6 @@ class Manager_RentalActivity : AppCompatActivity() {
         }
         managerCameraButton.setOnClickListener {
             startActivity(Intent(this, Manager_CameraActivity::class.java))
-            // 추가하기
         }
         managerMypageButton.setOnClickListener {
             startActivity(Intent(this, Manager_MypageActivity::class.java))
@@ -71,7 +102,6 @@ class Manager_RentalActivity : AppCompatActivity() {
             }
             R.id.managermenucamera -> {
                 startActivity(Intent(this, Manager_CameraActivity::class.java))
-                // 추가하기
                 true
             }
             R.id.managermenurental -> {
