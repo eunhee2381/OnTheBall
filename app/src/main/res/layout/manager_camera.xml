@@ -40,44 +40,60 @@
         android:layout_height="310dp"
 
         android:layout_marginTop="54dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
-    <TextView
-        android:id="@+id/textView"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:layout_marginTop="5dp"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/button1"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        tools:layout_editor_absoluteX="0dp" />
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toTopOf="@+id/cameraButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView">
+
+        <TextView
+            android:id="@+id/textView"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
+
+<!--    <TextView-->
+<!--        android:id="@+id/textView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="170dp"-->
+<!--        android:layout_marginTop="5dp"-->
+<!--        android:textAlignment="center"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/camButton"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/imageView"-->
+<!--        tools:layout_editor_absoluteX="0dp" />-->
 
     <android.widget.Button
-        android:id="@+id/button3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/signupbutton"
-        android:text="갤러리에서 이미지 가져오기"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintTop_toBottomOf="@+id/button1"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <android.widget.Button
-        android:id="@+id/button1"
+        android:id="@+id/cameraButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:background="@drawable/signupbutton"
         android:text="카메라로 이미지 가져오기"
-        app:layout_constraintBottom_toTopOf="@+id/button3"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/galleryButton"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView"
         tools:layout_editor_absoluteX="-33dp" />
 
     <android.widget.Button
-        android:id="@+id/button2"
+        android:id="@+id/galleryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/signupbutton"
+        android:text="갤러리에서 이미지 가져오기"
+        app:layout_constraintBottom_toTopOf="@+id/detectionButton"
+        app:layout_constraintTop_toBottomOf="@+id/cameraButton"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <android.widget.Button
+        android:id="@+id/detectionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -85,7 +101,7 @@
         android:background="@drawable/signinbutton"
         android:text="물체 탐지하기"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3"
+        app:layout_constraintTop_toBottomOf="@+id/galleryButton"
         tools:layout_editor_absoluteX="-114dp" />
 
 
