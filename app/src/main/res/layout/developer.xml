@@ -121,12 +121,12 @@
             android:id="@+id/developer4_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Back-end, DB"
-            android:textSize="20dp"
-            android:gravity="start"
             android:layout_below="@id/developer4"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="32dp"/>
+            android:layout_marginStart="32dp"
+            android:gravity="start"
+            android:text="Back-end, Front-end, DB"
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/developer5"
