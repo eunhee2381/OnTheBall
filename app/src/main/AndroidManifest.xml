@@ -25,81 +25,98 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
-        <activity
-            android:name=".ui.User_DetailListActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.Manager_DetailListActivity"
-            android:exported="false" /> <!-- 시작 액티비티 -->
-        <activity
-            android:name=".ui.IntroActivity"
+
+        <!-- 시작 액티비티 -->
+        <activity android:name=".ui.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- 메인 액티비티 -->
-        <activity
-            android:name=".ui.MainActivity"
-            android:exported="true" /> <!-- 개발자화면 -->
-        <activity
-            android:name=".ui.DeveloperActivity"
-            android:exported="true" /> <!-- 회원가입화면 -->
-        <activity
-            android:name=".ui.JoinActivity"
-            android:exported="true" /> <!-- 로그인화면 -->
-        <activity
-            android:name=".ui.LoginActivity"
-            android:exported="true" /> <!-- 메니저 블랙리스트 수정화면 -->
-        <activity
-            android:name=".ui.Manager_Blacklist_ModifyActivity"
-            android:exported="true" /> <!-- 매니저 블랙리스트 화면 -->
-        <activity
-            android:name=".ui.Manager_BlacklistActivity"
-            android:exported="true" /> <!-- 매니저 상세화면 -->
-        <activity
-            android:name=".ui.Manager_DetailActivity"
-            android:exported="true" /> <!-- 메니저 기자재목록 화면 -->
-        <activity
-            android:name=".ui.Manager_ListActivity"
-            android:exported="true" /> <!-- 매니저 기자재 수정화면 -->
-        <activity
-            android:name=".ui.Manager_ModifyActivity"
-            android:exported="true" /> <!-- 매니저 기자재 인식화면 -->
-        <activity
-            android:name=".ui.Manager_CameraActivity"
-            android:exported="true" /> <!-- 매니저 마이페이지 화면 -->
-        <activity
-            android:name=".ui.Manager_MypageActivity"
-            android:exported="true" /> <!-- 메니저 알림 화면 -->
-        <activity
-            android:name=".ui.Manager_NotificationActivity"
-            android:exported="true" /> <!-- 메니저 -->
-        <activity
-            android:name=".ui.Manager_RentalActivity"
-            android:exported="true" /> <!-- 유저 상세화며 -->
-        <activity
-            android:name=".ui.User_DetailActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.User_ListActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.User_MypageActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.User_NotificationActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.User_RentalActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.Manager_Product_AddActivity"
-            android:exported="true" />
+        </activity>
+
+        <!-- 메인 액티비티 -->
+        <activity android:name=".ui.MainActivity"
+            android:exported="true"/>
+
+        <!-- 개발자화면 -->
+        <activity android:name=".ui.DeveloperActivity"
+            android:exported="true"/>
+
+        <!-- 회원가입화면 -->
+        <activity android:name=".ui.JoinActivity"
+            android:exported="true"/>
+
+        <!-- 로그인화면 -->
+        <activity android:name=".ui.LoginActivity"
+            android:exported="true"/>
+
+        <!-- 메니저 블랙리스트 수정화면 -->
+        <activity android:name=".ui.Manager_Blacklist_ModifyActivity"
+            android:exported="true"/>
+
+        <!-- 매니저 블랙리스트 화면 -->
+        <activity android:name=".ui.Manager_BlacklistActivity"
+            android:exported="true"/>
+
+        <!-- 매니저 상세화면 -->
+        <activity android:name=".ui.Manager_DetailActivity"
+            android:exported="true"/>
+
+        <!-- 메니저 기자재목록 화면 (여러 종류 기자재) -->
+        <activity android:name=".ui.Manager_ListActivity"
+            android:exported="true"/>
+
+        <!-- 매니저 기자재목록 화면 (한 종류 기자재) -->
+        <activity android:name=".ui.Manager_DetailListActivity"
+            android:exported="true"/>
+
+        <!-- 매니저 기자재 수정화면 -->
+        <activity android:name=".ui.Manager_ModifyActivity"
+            android:exported="true"/>
+
+        <!-- 매니저 기자재 인식화면 -->
+        <activity android:name=".ui.Manager_CameraActivity"
+            android:exported="true"/>
+
+        <!-- 매니저 마이페이지 화면 -->
+        <activity android:name=".ui.Manager_MypageActivity"
+            android:exported="true"/>
+
+        <!-- 메니저 알림 화면 -->
+        <activity android:name=".ui.Manager_NotificationActivity"
+            android:exported="true"/>
+
+        <!-- 메니저  -->
+        <activity android:name=".ui.Manager_RentalActivity"
+            android:exported="true"/>
+
+        <!-- 유저 상세화며 -->
+        <activity android:name=".ui.User_DetailActivity"
+            android:exported="true"/>
+
+        <activity android:name=".ui.User_ListActivity"
+            android:exported="true"/>
+
+        <activity android:name=".ui.User_DetailListActivity"
+            android:exported="true"/>
+
+        <activity android:name=".ui.User_MypageActivity"
+            android:exported="true"/>
+
+        <activity android:name=".ui.User_NotificationActivity"
+            android:exported="true"/>
+
+        <activity android:name=".ui.User_RentalActivity"
+            android:exported="true"/>
+
+        <activity android:name=".ui.Manager_Product_AddActivity"
+            android:exported="true"/>
+
         <activity
             android:name=".ui.Manager_Delete_DialogActivity"
             android:theme="@style/DialogTheme" />
+
         <activity
             android:name=".ui.Accept_DialogActivity"
             android:theme="@style/DialogTheme" />
@@ -109,7 +126,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
     </application>
