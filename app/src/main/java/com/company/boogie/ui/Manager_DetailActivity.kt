@@ -28,8 +28,10 @@ class Manager_DetailActivity : AppCompatActivity() {
 
         val editButton: Button = findViewById(R.id.button_edit) // 수정하기 버튼을 누를 경우 수정페이지로
         editButton.setOnClickListener {
-            val intent = Intent(this, Manager_ModifyActivity::class.java)
-            startActivity(intent)
+            val modifyIntent = Intent(this, Manager_ModifyActivity::class.java)
+            modifyIntent.putExtra("documentId", documentId)
+            modifyIntent.putExtra("canBorrow", canBorrow)
+            startActivity(modifyIntent)
         }
 
         val closeButton: ImageButton = findViewById(R.id.close_button) // 나가기 버튼을 누를경우 리스트로 돌아감

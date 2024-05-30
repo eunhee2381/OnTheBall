@@ -115,6 +115,26 @@ class FirestoreProductModel {
     }
 
     /**
+     * Firestore에서 특정 기자재을 삭제합니다.
+     *
+     * @param documentId 조회를 위한 기자재 document의 ID입니다.
+     * @param canBorrow true면 Product 컬렉션에서, false면 Borrowing 컬렉션에서 조회합니다.
+     * @param callback 기자재 삭제 결과에 대한 상태 코드(STATUS_CODE)를 반환하는 콜백 함수입니다.
+     */
+    fun deleteProductByDocumentId(documentId: String, canBorrow: Boolean, callback: (Int) -> Unit) {
+        val collectionRef = if (canBorrow) db.collection("Product") else db.collection("Borrowing")
+        collectionRef.document(documentId).delete()
+            .addOnSuccessListener {
+                Log.d("FirestoreProductModel", "기자재 삭제 성공 $documentId")
+                callback(StatusCode.SUCCESS)
+            }
+            .addOnFailureListener {
+                Log.w("FirestoreProductModel", "기자재 삭제 실패 $documentId")
+                callback(StatusCode.FAILURE)
+            }
+    }
+
+    /**
      * Firestore에 기자재를 추가합니다
      *
      * @param addName 기자재의 이름입니다.
@@ -271,6 +291,91 @@ class FirestoreProductModel {
     }
 
     /**
+     * Firestore에서 기자재 정보를 수정합니다.
+     *
+     * @param documentId 조회를 위한 기자재 document의 ID입니다.
+     * @param canBorrow true면 Product 컬렉션에서, false면 Borrowing 컬렉션에서 조회합니다.
+     * @param updatedLocation 수정된 기자재의 위치입니다.
+     * @param updatedDetail 수정된 기자재의 상세 정보입니다.
+     * @param callback 상품 정보 수정 상태 코드(STATUS_CODE)를 반환하는 콜백 함수입니다.
+     */
+    fun updateLocationDetail(documentId: String, canBorrow: Boolean, updatedLocation: String, updatedDetail: String, callback: (Int) -> Unit) {
+        val collectionRef = if (canBorrow) db.collection("Product") else db.collection("Borrowing")
+
+        var locationUpdateSuccess = false
+        var detailUpdateSuccess = false
+
+        // 위치 업데이트
+        collectionRef.document(documentId).update("location", updatedLocation)
+            .addOnSuccessListener {
+                Log.d("FirestoreProductModel", "기자재 위치 업데이트 성공 - $documentId, $updatedLocation")
+                locationUpdateSuccess = true
+                if (locationUpdateSuccess && detailUpdateSuccess) {
+                    callback(StatusCode.SUCCESS)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreProductModel", "기자재 위치 업데이트 실패 - $documentId, $updatedLocation", e)
+                callback(StatusCode.FAILURE)
+            }
+
+        // 설명 업데이트
+        collectionRef.document(documentId).update("detail", updatedDetail)
+            .addOnSuccessListener {
+                Log.d("FirestoreProductModel", "기자재 설명 업데이트 성공 - $documentId, $updatedDetail")
+                detailUpdateSuccess = true
+                if (locationUpdateSuccess && detailUpdateSuccess) {
+                    callback(StatusCode.SUCCESS)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreProductModel", "기자재 설명 업데이트 실패 - $documentId, $updatedDetail", e)
+                callback(StatusCode.FAILURE)
+            }
+    }
+
+    /**
+     * Storage에 이미지를 업로드하고 Firestore에 이미지 경로를 img 필드에 저장합니다.
+     *
+     * @param uri Storage에 저장할 이미지 Uri입니다.
+     * @param classficationCode 기자재의 종류 코드입니다.
+     * @param productId 종류 당 기자재의 id입니다.
+     * @param documentId 조회를 위한 기자재 document의 ID입니다.
+     * @param canBorrow true면 Product 컬렉션에서, false면 Borrowing 컬렉션에서 조회합니다.
+     * @param callback 상태 코드(STATUS_CODE)를 반환하는 콜백 함수입니다.
+     */
+    fun updateImg(uri: Uri, classificatonCode: Int, productId: Int, documentId: String, canBorrow: Boolean, callback: (Int) -> Unit) {
+        val storageRef = Firebase.storage.reference.child("Product/$classificatonCode/$productId.jpg")
+        storageRef.putFile(uri)
+            .addOnSuccessListener { _ ->
+                Log.d("FirestoreProductModel", "이미지 storage에 업로드 성공")
+                storageRef.downloadUrl
+                    .addOnSuccessListener { downloadUri ->
+                        val imageUrl = downloadUri.toString()
+                        Log.d("FirestoreProductModel", "storage 저장소 경로 알아오기 성공 $imageUrl")
+                        val collectionRef = if (canBorrow) db.collection("Product") else db.collection("Borrowing")
+                        collectionRef.document(documentId).update("img", imageUrl)
+                            .addOnSuccessListener {
+                                Log.d("FirestoreProductModel", "firestore img 필드에 storage 저장소 경로 업데이트 성공")
+                                callback(StatusCode.SUCCESS)
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("FirestoreProductModel", "firestore img 필드에 storage 저장소 경로 업데이트 실패", e)
+                                callback(StatusCode.FAILURE)
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("FirestoreProductModel", "storage 저장소 경로 알아오기 실패", e)
+                        callback(StatusCode.FAILURE)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreProductModel", "이미지 storage에 업로드 실패", e)
+                callback(StatusCode.FAILURE)
+            }
+    }
+
+    /**
      * Firestore에서 isBanned 를 수정합니다.
      *
      * @param userEmail isBanned 상태를 변경할 이메일입니다.
@@ -416,8 +521,9 @@ class FirestoreProductModel {
     /**
      * Firestore에서 특정 ID의 기자재 상세 정보를 Product 또는 Borrowing 컬렉션에서 조회합니다.
      *
-     * @param classficationCode 정보를 조회할 기자재의 종류 코드입니다.
-     * @param callback 기자재 정보 조회 상태 코드(STATUS_CODE)와 기자재 리스트를 반환하는 콜백 함수입니다.
+     * @param documentId 조회를 위한 기자재 document의 ID입니다.
+     * @param canBorrow true면 Product 컬렉션에서, false면 Borrowing 컬렉션에서 조회합니다.
+     * @param callback 기자재 정보 조회 상태 코드(STATUS_CODE)와 기자재를 반환하는 콜백 함수입니다.
      */
     fun getProductsByDocumentId(documentId: String, canBorrow: Boolean, callback: (Int, Product?) -> Unit) {
         val collectionRef = if (canBorrow) db.collection("Product") else db.collection("Borrowing")
@@ -452,7 +558,7 @@ class FirestoreProductModel {
      * Storage에서 이미지 파일 경로인 img 값을 읽어 Bitmap을 리턴합니다.
      *
      * @param imgUrl 비트맵으로 변환할 이미지 파일 경로입니다.
-     * @param callback 상태 코드(STATUS_CODE)를 반환하는 콜백 함수입니다.
+     * @param callback 상태 코드(STATUS_CODE)와 변환한 이미지 비트맵을 반환하는 콜백 함수입니다.
      */
     fun getProductImgBitmap(imgUrl: String, callback: (Int, Bitmap?) -> Unit) {
         val imgRef = Firebase.storage.getReferenceFromUrl(imgUrl)

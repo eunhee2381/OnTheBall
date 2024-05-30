@@ -7,15 +7,15 @@
 
     <!-- Auto layout, variables, and unit scale are not yet supported -->
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="기자재 총 개수"
-        android:textSize="19sp"
-        app:layout_constraintBottom_toBottomOf="@+id/count"
-        app:layout_constraintStart_toStartOf="@+id/location"
-        app:layout_constraintTop_toTopOf="@+id/count" />
+<!--    <TextView-->
+<!--        android:id="@+id/textView3"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="기자재 총 개수"-->
+<!--        android:textSize="19sp"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/count"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/location"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/count" />-->
 
     <RelativeLayout
         android:id="@+id/frame_1"
@@ -164,16 +164,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
-    <EditText
+    <TextView
         android:id="@+id/product"
+        android:text="기자재 이름"
         android:layout_width="380dp"
         android:layout_height="50dp"
-        android:layout_marginTop="72dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="기자재 이름"
+        android:layout_marginTop="75dp"
+        android:textSize="19sp"
         android:padding="8dp"
-        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
@@ -194,37 +192,10 @@
         app:layout_constraintTop_toBottomOf="@+id/product" />
 
     <EditText
-        android:id="@+id/count"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="160dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="개수"
-        android:padding="8dp"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@+id/product"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/product"
-        app:layout_constraintTop_toBottomOf="@id/textView" />
-
-    <EditText
-        android:id="@+id/remain"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:background="@drawable/edit_text_background"
-        android:hint="남은 개수"
-        android:padding="8dp"
-        android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/explain"
-        app:layout_constraintEnd_toEndOf="@+id/product"
-        app:layout_constraintStart_toStartOf="@+id/count"
-        app:layout_constraintTop_toBottomOf="@id/count" />
-
-    <EditText
         android:id="@+id/explain"
         android:layout_width="380dp"
         android:layout_height="250dp"
-        android:layout_marginTop="249dp"
+        android:layout_marginTop="178dp"
         android:background="@drawable/edit_text_background"
         android:gravity="top|start"
         android:hint="설명"
@@ -263,7 +234,7 @@
         android:onClick="showDeleteDialog" />
 
     <android.widget.Button
-        android:id="@+id/photo2"
+        android:id="@+id/modify_photo"
         android:layout_width="90dp"
         android:layout_height="50dp"
         android:layout_marginStart="11dp"
@@ -275,15 +246,5 @@
         app:layout_constraintHorizontal_bias="0.02"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frame_1" />  <!-- 가운데 정렬 -->
-
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="대여 후 남은 개수"
-        android:textSize="19sp"
-        app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="@id/remain" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

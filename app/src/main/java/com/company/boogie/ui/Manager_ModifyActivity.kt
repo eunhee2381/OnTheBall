@@ -1,25 +1,122 @@
 package com.company.boogie.ui
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.company.boogie.R
+import com.company.boogie.StatusCode
+import com.company.boogie.models.FirestoreProductModel
+import com.company.boogie.models.Product
+import org.w3c.dom.Text
 
 class Manager_ModifyActivity : AppCompatActivity() {
+    private lateinit var detailProduct: Product
+    private lateinit var documentId: String
+    private var canBorrow: Boolean = false
+    private val PICK_IMAGE_REQUEST = 1001
+
+    private val productName by lazy { findViewById<TextView>(R.id.product) }
+    private val productLocation by lazy { findViewById<EditText>(R.id.location) }
+    private val productExplain by lazy {findViewById<EditText>(R.id.explain) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.manager_modify)
-
         setupNavigationButtons()
 
+        documentId = intent?.getStringExtra("documentId") ?: ""
+        canBorrow = intent?.getBooleanExtra("canBorrow", false) ?: false
+
+        fetchDetailData(documentId, canBorrow) // 수정할 기자재의 정보 표시
+
+        // 기자재 사진 변경 버튼 클릭 이벤트
+        findViewById<Button>(R.id.modify_photo).setOnClickListener {
+            // 사진 변경 로직
+            pickImageFromGallery()
+        }
+
+        // 기자재 수정 버튼 클릭 이벤트
+        findViewById<Button>(R.id.change).setOnClickListener {
+            val location = productLocation.text.toString()
+            val explain = productExplain.text.toString()
+            updateProduct(location, explain) // 기자재 업데이트
+        }
+
+        // 기자재 삭제 버튼 클릭 이벤트
         val deleteButton: Button = findViewById(R.id.delete)
         deleteButton.setOnClickListener {
             showDeleteDialog()
+        }
+    }
+
+    // 수정할 기자재의 정보 표시
+    private fun fetchDetailData(documentId: String, canBorrow: Boolean) {
+        val firestoreProductModel = FirestoreProductModel()
+        firestoreProductModel.getProductsByDocumentId(documentId, canBorrow) { STATUS_CODE, product ->
+            if (STATUS_CODE == StatusCode.SUCCESS && product != null) {
+                Log.d("Manager_ModifyActivity", "기자재 상세 정보 가져오기 성공 product=${product}")
+                detailProduct = product
+
+                // UI 수정
+                productName.text = "${product.name} ${product.productId}" // 기자재 이름
+                productLocation.setText(product.location) // 기자재 위치
+                productExplain.setText(product.detail) // 기자재 설명
+            }
+            else {
+                Log.w("Manager_ModifyActivity", "$documentId 기자재 상세 정보 가져오기 실패")
+            }
+        }
+    }
+
+    // 기자재 업데이트
+    private fun updateProduct(location: String, explain: String) {
+        val firestoreProductModel = FirestoreProductModel()
+        firestoreProductModel.updateLocationDetail(documentId, canBorrow, location, explain) { STATUS_CODE ->
+            if (STATUS_CODE == StatusCode.SUCCESS) {
+                Toast.makeText(this, "업데이트에 성공했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                Toast.makeText(this, "업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            startActivity(Intent(this, Manager_ListActivity::class.java))
+            finish()
+        }
+    }
+
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val firestoreProductModel = FirestoreProductModel()
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            val selectedImageUri = data?.data
+            selectedImageUri?.let { uri ->
+                firestoreProductModel.updateImg(uri, detailProduct.classificationCode, detailProduct.productId, documentId, canBorrow) { STATUS_CODE ->
+                    if (STATUS_CODE == StatusCode.SUCCESS) {
+                        Toast.makeText(this, "이미지 수정에 성공했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
+                        Toast.makeText(this, "이미지 수정에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 
@@ -95,6 +192,8 @@ class Manager_ModifyActivity : AppCompatActivity() {
 
     private fun showDeleteDialog() {
         val intent = Intent(this, Manager_Delete_DialogActivity::class.java)
+        intent.putExtra("documentId", documentId)
+        intent.putExtra("canBorrow", canBorrow)
         startActivity(intent)
     }
 }
