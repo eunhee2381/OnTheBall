@@ -414,6 +414,41 @@ class FirestoreProductModel {
     }
 
     /**
+     * Firestore에서 특정 ID의 기자재 상세 정보를 Product 또는 Borrowing 컬렉션에서 조회합니다.
+     *
+     * @param classficationCode 정보를 조회할 기자재의 종류 코드입니다.
+     * @param callback 기자재 정보 조회 상태 코드(STATUS_CODE)와 기자재 리스트를 반환하는 콜백 함수입니다.
+     */
+    fun getProductsByDocumentId(documentId: String, canBorrow: Boolean, callback: (Int, Product?) -> Unit) {
+        val collectionRef = if (canBorrow) db.collection("Product") else db.collection("Borrowing")
+        collectionRef.document(documentId).get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    val product = documentSnapshot.toObject<Product>()?.apply {
+                        this.canBorrow = canBorrow
+                        this.documentId = documentId
+                    }
+                    if (product != null) {
+                        Log.d("FirestoreProductModel", "${product.name} 기자재 상세 정보 가져오기 성공")
+                        callback(StatusCode.SUCCESS, product)
+                    }
+                    else {
+                        Log.w("FirestoreProductModel", "$documentId 기자재 상세 정보가 존재하지 않음")
+                        callback(StatusCode.FAILURE, null)
+                    }
+                }
+                else {
+                    Log.w("FirestoreProductModel", "$documentId 기자재 상세 정보 가져오기 실패")
+                    callback(StatusCode.FAILURE, null)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w("FirestoreProductModel", "$documentId 기자재 상세 정보 가져오기 실패", e)
+                callback(StatusCode.FAILURE, null)
+            }
+    }
+
+    /**
      * Storage에서 이미지 파일 경로인 img 값을 읽어 Bitmap을 리턴합니다.
      *
      * @param imgUrl 비트맵으로 변환할 이미지 파일 경로입니다.

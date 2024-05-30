@@ -5,6 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:id="@+id/frame_1"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:background="#2D9596"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <!-- ImageButton and TextView for List -->
 
     <!-- 중앙에 위치할 모달 윈도우 -->
@@ -57,25 +66,25 @@
 
         <!-- 이미지 파일 -->
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/product_imageView"
             android:layout_width="match_parent"
-            android:layout_height="373dp"
-            android:layout_marginTop="48dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="296dp"
+            android:layout_marginTop="52dp"
+            android:scaleType="fitCenter" />
 
         <!-- 구분선 -->
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_marginTop="421dp"
+            android:layout_marginTop="350dp"
             android:background="#000000" />
 
         <!-- 기자재 설명 -->
         <TextView
-            android:id="@+id/manager_text"
+            android:id="@+id/user_detailtext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="423dp"
+            android:layout_marginTop="353dp"
             android:padding="16dp"
             android:text="여기에 기자재에 대한 설명이 들어갑니다."
             android:textSize="16sp" />
@@ -97,6 +106,7 @@
         android:id="@+id/user_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="589dp"
         android:layout_marginBottom="24dp"
         android:background="@android:color/transparent"
         android:padding="16dp"
