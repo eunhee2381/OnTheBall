@@ -12,6 +12,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.company.boogie.R
 import com.company.boogie.ui.LoginActivity
+import com.company.boogie.ui.Manager_Notification_DialogActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.SetOptions
@@ -20,6 +21,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.firestore.FirebaseFirestore
+
 
 const val channelId = "notification_channel"
 const val channelName = "com.company.boogie"
@@ -71,7 +73,7 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
      *
      */
     private fun generateNotification(title: String, userName: String, productName: String, notificationId: Int) {
-        val intent = Intent(this, LoginActivity::class.java).apply {
+        val intent = Intent(this, Manager_Notification_DialogActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         val message = userName + "님이" + productName + "을 대여요청하였습니다"

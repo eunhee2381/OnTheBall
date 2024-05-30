@@ -15,6 +15,26 @@ import com.company.boogie.R
 import com.company.boogie.StatusCode
 import com.company.boogie.models.FirestoreProductModel
 import com.company.boogie.models.Product
+import android.app.DatePickerDialog
+import android.view.LayoutInflater
+import android.app.AlertDialog
+import com.company.boogie.utils.FirebaseRequestUtil
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.Calendar as Calendar
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okhttp3.Callback
+import okhttp3.Call
+import okhttp3.Response
+import java.io.IOException
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class User_DetailActivity : AppCompatActivity() {
     private lateinit var detailProduct: Product
@@ -26,9 +46,7 @@ class User_DetailActivity : AppCompatActivity() {
         setContentView(R.layout.user_detail)
         setupNavigationButtons()
 
-        // 나가기 버튼 클릭 이벤트
         findViewById<ImageButton>(R.id.close_button).setOnClickListener {
-            // 기자재 목록 페이지로
             startActivity(Intent(this, User_ListActivity::class.java))
             finish()
         }
@@ -36,19 +54,17 @@ class User_DetailActivity : AppCompatActivity() {
         documentId = intent?.getStringExtra("documentId") ?: ""
         canBorrow = intent?.getBooleanExtra("canBorrow", false) ?: false
 
-        // 대여 버튼 클릭 이벤트
         if (canBorrow) {
-            // 대여 페이지로
             findViewById<Button>(R.id.button_edit).setOnClickListener {
-                Log.d("User_DetailActivity", "대여 신청 버튼 클릭 리스너 실행")
-                // startActivity(Intent(this, )) // 대여 페이지 or 다이얼로그 구현 필요
+                showDatePickerDialog()
             }
-        }
-        else {
+        } else {
             findViewById<Button>(R.id.button_edit).text = "대여 불가"
+            //findViewById<Button>(R.id.button_edit).setOnClickListener {
+                //showDatePickerDialog()
+            //}
         }
 
-        // 기자재 상세 정보를 가져와 UI 수정
         fetchDetailData(documentId, canBorrow)
     }
 
@@ -143,4 +159,102 @@ class User_DetailActivity : AppCompatActivity() {
             else -> false
         }
     }
+    private fun showDatePickerDialog() {
+        val cal = Calendar.getInstance()
+        val datePickerDialog = DatePickerDialog(this, { _, year, month, dayOfMonth ->
+            val selectedDate = Calendar.getInstance()
+            selectedDate.set(year, month, dayOfMonth)
+            showApplicationDialog(selectedDate)
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
+        datePickerDialog.datePicker.maxDate = cal.apply { add(Calendar.DAY_OF_YEAR, 30) }.timeInMillis
+        datePickerDialog.show()
+    }
+
+    private fun showApplicationDialog(selectedDate: Calendar) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.user_detail_dialog, null)
+        val dateDisplay = dialogView.findViewById<TextView>(R.id.date_display)
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        dateDisplay.text = sdf.format(selectedDate.time)
+        val firebaseUtil = FirebaseRequestUtil()
+        val formattedDate = sdf.format(selectedDate.time)
+
+        val dialog = AlertDialog.Builder(this@User_DetailActivity) // Context 명시적으로 지정
+        dialog.setView(dialogView)
+        dialog.setPositiveButton("신청하기") { _, _ ->
+            Log.d("User_DetailActivity", "신청하기 버튼 클릭됨")
+            firebaseUtil.productToBorrowing(detailProduct.name, detailProduct.productId, formattedDate) { statusCode ->
+                Log.d("User_DetailActivity", "Firebase 응답: $statusCode")
+                // 상태 코드에 따른 후속 처리
+            }
+            //firebaseUtil.borrowingToProduct(detailProduct.name, detailProduct.productId) { statusCode ->
+              //Log.d("User_DetailActivity", "Firebase 응답: $statusCode")
+            //}
+        }
+        dialog.setNegativeButton("취소", null)
+        dialog.show()
+    }
+
+    private fun sendRentalRequestNotification(productName: String) {
+        val db = Firebase.firestore
+        val title = "대여 요청"
+
+        // Firestore에서 isAdmin이 true인 모든 사용자(관리자)를 검색
+        db.collection("User").whereEqualTo("isAdmin", true).get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    Log.d("User_DetailActivity", "No admins found")
+                    return@addOnSuccessListener
+                }
+                // 각 관리자에게 대여 요청 메시지 보내기
+                for (document in documents) {
+                    val adminEmail = document.getString("email")
+                    val message = "${FirebaseAuth.getInstance().currentUser?.email}님이 $productName 을 대여요청 하였습니다."
+
+                    if (adminEmail != null) {
+                        sendNotificationToServer(adminEmail, title, message)
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("User_DetailActivity", "Error fetching admin documents", e)
+            }
+    }
+
+    private fun sendNotificationToServer(email: String, title: String, message: String) {
+        val client = OkHttpClient()
+
+        val json = """
+    {
+        "email": "$email",
+        "title": "$title",
+        "message": "$message"
+    }
+    """.trimIndent()
+
+        val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaType())
+        val url = "http://yourserver.com/api/sendRentalRequest" // 실제 서버 URL로 변경 필요
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("Notification", "알림 전송 실패", e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.e("Notification", "서버 응답: ${response.message}")
+                } else {
+                    Log.i("Notification", "알림이 성공적으로 전송되었습니다: $email")
+                }
+                response.close()
+            }
+        })
+    }
+
 }

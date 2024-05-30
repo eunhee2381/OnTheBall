@@ -113,7 +113,7 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/manager_list"
+        app:layout_constraintBottom_toTopOf="@+id/add_product"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/list_table_layout"
@@ -124,10 +124,9 @@
         android:id="@+id/manager_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="589dp"
-        android:layout_marginBottom="24dp"
         android:background="@android:color/transparent"
         android:padding="16dp"
+        android:layout_marginTop="567dp"
         android:src="@drawable/list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/manager_rental"
@@ -229,5 +228,16 @@
         android:src="@drawable/menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 기자재 추가 버튼 -->
+    <ImageButton
+        android:id="@+id/add_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/add_background"
+        android:src="@drawable/add"
+        app:layout_constraintBottom_toTopOf="@+id/manager_mypage"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

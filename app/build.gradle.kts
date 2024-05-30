@@ -67,4 +67,6 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$camerax_version")
     implementation("androidx.camera:camera-view:1.0.0-alpha25")
     implementation("androidx.camera:camera-extensions:1.0.0-alpha25")
+
+    implementation ("com.squareup.okhttp3:okhttp:4.9.0")
 }

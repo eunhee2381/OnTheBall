@@ -11,12 +11,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -25,6 +20,7 @@ import androidx.core.content.ContextCompat
 import com.company.boogie.R
 import com.company.boogie.models.FirestoreProductModel
 import com.company.boogie.StatusCode
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 import java.util.UUID
@@ -37,7 +33,32 @@ class Manager_Product_AddActivity : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var selectImageLauncher: ActivityResultLauncher<Intent>
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
+    private lateinit var classificationSpinner: Spinner
+    private lateinit var productIdTextView: TextView
     private var isImageSelected: Boolean = false
+
+    private val classificationMap = mapOf(
+        "아두이노 우노" to 0,
+        "라즈베리파이 wh" to 1,
+        "라즈베리파이 제로" to 2 ,
+        "라즈베리파이 W" to 3 ,
+        "라즈베리파이 2 W" to 4 ,
+        "라즈베리파이 5" to 5 ,
+        "라즈베리파이 4 모델 B" to 6 ,
+        "라즈베리파이 3 모델 B" to 7 ,
+        "라즈베리파이 3 모델 B+" to 8 ,
+        "라즈베리파이 3 모델 A+" to 9 ,
+        "라즈베리파이 2 모델 B" to 10 ,
+        "라즈베리파이 1 모델 B+" to 11 ,
+        "라즈베리파이 1 모델 A+" to 12 ,
+        "아두이노 레오나르도" to 13,
+        "아두이노 마이크로" to 14,
+        "아두이노 듀에" to 15,
+        "아두이노 나노" to 16,
+        "아두이노 메가" to 17,
+        "아두이노 프로" to 18,
+        "아두이노 제로" to 19
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +67,12 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         firestoreProductModel = FirestoreProductModel()
         storage = FirebaseStorage.getInstance()
         imageView = findViewById(R.id.imageView)
+        classificationSpinner = findViewById(R.id.classification_spinner)
+        productIdTextView = findViewById(R.id.product_id_textview)
 
         setupNavigationButtons()
         setupImagePickers()
+        setupClassificationSpinner()
 
         val productAddButton: Button = findViewById(R.id.product_add)
         productAddButton.setOnClickListener {
@@ -58,6 +82,16 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         val photoAddButton: Button = findViewById(R.id.photo2)
         photoAddButton.setOnClickListener {
             showPhotoOptionsDialog()
+        }
+
+        classificationSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                fetchLastProductId(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
         }
     }
 
@@ -202,14 +236,50 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         return File.createTempFile(UUID.randomUUID().toString(), ".jpg", storageDir)
     }
 
+    private fun setupClassificationSpinner() {
+        classificationSpinner = findViewById(R.id.classification_spinner)
+        val classificationNames = classificationMap.keys.toTypedArray()
+        ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            classificationNames
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            classificationSpinner.adapter = adapter
+        }
+    }
+
+    private fun fetchLastProductId(classificationCode: Int) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("Product")
+            .whereEqualTo("classificationCode", classificationCode)
+            .orderBy("productId", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents != null && !documents.isEmpty) {
+                    val lastProduct = documents.documents[0]
+                    val lastProductId = lastProduct.getLong("productId")?.toInt() ?: 0
+                    productIdTextView.text = (lastProductId + 1).toString()
+                } else {
+                    productIdTextView.text = "1"
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Manager_Product_AddActivity", "Failed to fetch last product ID", e)
+                productIdTextView.text = "1"
+            }
+    }
+
     private fun addProductToFirestore() {
         val productName = findViewById<EditText>(R.id.product_name).text.toString()
         val productLocation = findViewById<EditText>(R.id.location).text.toString()
-        val productNumber = findViewById<EditText>(R.id.count).text.toString().toIntOrNull()
-        val classificationCode = findViewById<EditText>(R.id.remain).text.toString().toIntOrNull()
+        val productNumber = productIdTextView.text.toString().toIntOrNull()
+        val classificationName = classificationSpinner.selectedItem as String
+        val classificationCode = classificationMap[classificationName] ?: 0
         val productDetail = findViewById<EditText>(R.id.explain).text.toString()
 
-        if (productNumber != null && classificationCode != null) {
+        if (productNumber != null) {
             if (isImageSelected) {
                 val imageRef = storage.reference.child("images/${UUID.randomUUID()}.jpg")
                 imageRef.putFile(imageUri)
@@ -239,7 +309,6 @@ class Manager_Product_AddActivity : AppCompatActivity() {
                         Log.e("Manager_Product_AddActivity", "이미지 업로드 실패", e)
                     }
             } else {
-                // 기본 이미지 URL 사용
                 val defaultImageUrl = "https://example.com/default_image.jpg"
                 firestoreProductModel.addProduct(
                     addProductId = productNumber,

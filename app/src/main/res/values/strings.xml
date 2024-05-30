@@ -3,4 +3,26 @@
     <string name="menu">Menu</string>
     <string name="no_permission">App has no permission %1$s. Some features would not work correctly.</string>
     <string name="req_permission_reason">App requires %1$s permission. Could you allow the permission?</string>
+    <!-- Classification 배열 추가 -->
+    <string-array name="classification_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+    </string-array>
 </resources>

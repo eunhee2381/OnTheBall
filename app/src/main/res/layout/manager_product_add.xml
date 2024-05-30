@@ -108,7 +108,6 @@
         app:layout_constraintStart_toStartOf="@id/manager_camera"
         app:layout_constraintEnd_toEndOf="@id/manager_camera"/>
 
-
     <ImageButton
         android:id="@+id/manager_mypage"
         android:layout_width="0dp"
@@ -169,30 +168,28 @@
         app:layout_constraintStart_toStartOf="@+id/product_name"
         app:layout_constraintTop_toBottomOf="@+id/product_name" />
 
-    <EditText
-        android:id="@+id/count"
+    <TextView
+        android:id="@+id/product_id_textview"
         android:layout_width="120dp"
         android:layout_height="50dp"
         android:layout_marginTop="160dp"
         android:background="@drawable/edit_text_background"
+        android:gravity="center_vertical"
         android:hint="번호"
-        android:inputType="number"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="@+id/product_name"
         app:layout_constraintTop_toBottomOf="@id/textView" />
 
-    <EditText
-        android:id="@+id/remain"
+    <Spinner
+        android:id="@+id/classification_spinner"
         android:layout_width="120dp"
         android:layout_height="50dp"
-        android:layout_marginTop="205dp"
+        android:layout_marginTop="190dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/edit_text_background"
-        android:hint="코드"
-        android:inputType="number"
-        android:padding="8dp"
         app:layout_constraintBottom_toTopOf="@+id/explain"
-        app:layout_constraintEnd_toEndOf="@+id/location"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintEnd_toEndOf="@+id/product_id_textview"
+        app:layout_constraintTop_toBottomOf="@+id/frame_1" />
 
     <EditText
         android:id="@+id/explain"
@@ -208,7 +205,7 @@
         android:minLines="2"
         app:layout_constraintEnd_toEndOf="@+id/product_name"
         app:layout_constraintStart_toStartOf="@+id/product_name"
-        app:layout_constraintTop_toBottomOf="@id/remain" />
+        app:layout_constraintTop_toBottomOf="@id/classification_spinner" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -251,17 +248,19 @@
         android:layout_height="wrap_content"
         android:text="기자재 번호"
         android:textSize="19sp"
-        app:layout_constraintBottom_toBottomOf="@+id/count"
+        app:layout_constraintBottom_toBottomOf="@+id/product_id_textview"
         app:layout_constraintStart_toStartOf="@+id/location"
-        app:layout_constraintTop_toTopOf="@+id/count" />
+        app:layout_constraintTop_toTopOf="@+id/product_id_textview" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:text="기자재 분류 코드"
         android:textSize="19sp"
+        app:layout_constraintBottom_toTopOf="@+id/explain"
         app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="@id/remain" />
+        app:layout_constraintTop_toTopOf="@id/classification_spinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
