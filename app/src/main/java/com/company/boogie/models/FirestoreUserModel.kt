@@ -1,14 +1,11 @@
 package com.company.boogie.models
 
-import com.google.firebase.firestore.FirebaseFirestore
 import android.util.Log
 import com.company.boogie.StatusCode
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.PropertyName
 
 /**
  * Firestore를 사용하여 사용자 데이터를 관리하는 모델 클래스입니다.
@@ -90,7 +87,7 @@ class FirestoreUserModel {
     /**
      * 현재 로그인 중인 계정이 받은 알람을 불러오는 함수
      */
-    fun getAlarms(callback: (Int, List<Message>?) -> Unit) {
+    public fun getAlarms(callback: (Int, List<Message>?) -> Unit) {
         val userEmail = FirebaseAuth.getInstance().currentUser?.email // 현재 로그인한 사용자의 이메일 가져오기
 
         if (userEmail == null) {
