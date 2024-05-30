@@ -6,6 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -42,6 +46,11 @@ class Manager_CameraActivity : AppCompatActivity() {
     private var isImageLoaded: Boolean = false
     private var detectionToast: Toast? = null
 
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var toastRunnable: Runnable
+    private var toastCount = 0
+    private val maxToastCount = 3
+
     private val PICK_IMAGE_REQUEST = 1
     private val REQUEST_IMAGE_CAPTURE = 2
     private val REQUEST_CAMERA_PERMISSION = 3
@@ -63,6 +72,9 @@ class Manager_CameraActivity : AppCompatActivity() {
         val cambtn: Button = findViewById(R.id.cameraButton)    // 카메라 선택
         val galbtn: Button = findViewById(R.id.galleryButton)    // 갤러리 이미지
         val detbtn: Button = findViewById(R.id.detectionButton)    // 객체 탐지
+
+        // 모델 초기화
+        initializeInterpreter("yolov5.tflite")
 
         // Load TFLite model
         tflite = Interpreter(loadModelFile())
@@ -144,65 +156,204 @@ class Manager_CameraActivity : AppCompatActivity() {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    private fun detectObjects() {
-        // Assuming the model requires 480x480 images
-        val inputSize = 480
+    private fun initializeInterpreter(modelPath: String) {
+        try {
+            val assetFileDescriptor = assets.openFd(modelPath)
+            val fileInputStream = FileInputStream(assetFileDescriptor.fileDescriptor)
+            val fileChannel = fileInputStream.channel
+            val startOffset = assetFileDescriptor.startOffset
+            val declaredLength = assetFileDescriptor.declaredLength
+            val modelBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
+            tflite = Interpreter(modelBuffer)
 
-        // Resize and preprocess the image
+            // 모델의 입력 및 출력 크기 로그 출력
+            val inputTensor = tflite.getInputTensor(0)
+            val outputTensor = tflite.getOutputTensor(0)
+
+            Log.d("dog", "Model Input Tensor Shape: ${inputTensor.shape().contentToString()}")
+            Log.d("dog", "Model Output Tensor Shape: ${outputTensor.shape().contentToString()}")
+
+            Log.d("dog", "Model Input DataType: ${inputTensor.dataType()}")
+            Log.d("dog", "Model Output DataType: ${outputTensor.dataType()}")
+
+        } catch (e: IOException) {
+            Log.e("dog", "Error initializing TensorFlow Lite Interpreter.", e)
+        }
+    }
+
+    // 안드로이드 코드에서 전처리 과정 수정
+    private fun preprocessImage(bitmap: Bitmap, inputSize: Int): ByteBuffer {
         val inputBitmap = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
         val inputBuffer = ByteBuffer.allocateDirect(1 * 3 * inputSize * inputSize * 4).order(ByteOrder.nativeOrder())
+
+        val floatArray = FloatArray(inputSize * inputSize * 3)
+        var idx = 0
         for (y in 0 until inputSize) {
             for (x in 0 until inputSize) {
                 val pixelValue = inputBitmap.getPixel(x, y)
-                inputBuffer.putFloat(((pixelValue shr 16) and 0xFF) / 255.0f)
-                inputBuffer.putFloat(((pixelValue shr 8) and 0xFF) / 255.0f)
-                inputBuffer.putFloat((pixelValue and 0xFF) / 255.0f)
+                floatArray[idx++] = ((pixelValue shr 16) and 0xFF) / 255.0f // R
+                floatArray[idx++] = ((pixelValue shr 8) and 0xFF) / 255.0f  // G
+                floatArray[idx++] = (pixelValue and 0xFF) / 255.0f          // B
             }
         }
 
-        // Define output format
+        // 코랩과 동일하게 이미지 순서 조정 (H, W, C) -> (C, H, W)
+        val reorderedFloatArray = FloatArray(inputSize * inputSize * 3)
+        for (i in 0 until inputSize * inputSize) {
+            reorderedFloatArray[i * 3] = floatArray[i * 3 + 2]  // B
+            reorderedFloatArray[i * 3 + 1] = floatArray[i * 3 + 1]  // G
+            reorderedFloatArray[i * 3 + 2] = floatArray[i * 3]  // R
+        }
+
+        inputBuffer.asFloatBuffer().put(reorderedFloatArray)
+
+        // 디버깅용 로그
+        Log.d("dog", "Preprocessed Image Buffer (first 100 floats): ${reorderedFloatArray.slice(0 until 100).joinToString(", ")}")
+
+
+        return inputBuffer
+    }
+
+    private fun detectObjects() {
+        val inputSize = 480
+        val inputBuffer = preprocessImage(bitmap, inputSize)
         val outputBuffer = Array(1) { Array(14175) { FloatArray(25) } }
 
-        // Run the inference
-        tflite.run(inputBuffer, outputBuffer)
+        if (::tflite.isInitialized) {
+            tflite.run(inputBuffer, outputBuffer)
+        } else {
+            Log.e("dog", "TensorFlow Lite Interpreter is not initialized.")
+            return
+        }
 
-        // Logging output
-        Log.d("dog", "Detection Output: ${outputBuffer.contentDeepToString()}")
+        // 모델 출력 디버깅 로그 추가
+        for (i in 0 until 10) {
+            Log.d("dog", "Output[0][$i]: ${outputBuffer[0][i].contentToString()}")
+        }
 
-        // List to store detected objects
-        val detectedObjects = mutableListOf<String>()
+        val confidenceThreshold = 0.01  // 신뢰도 임계값
+        val boxes = ArrayList<RectF>()
+        val scores = ArrayList<Float>()
+        val classIds = ArrayList<Int>()
 
-        // Post-process the output to log detected objects
+        val originalWidth = bitmap.width
+        val originalHeight = bitmap.height
+
         for (i in outputBuffer[0].indices) {
-            val confidence = outputBuffer[0][i][4]  // Confidence score
-            Log.d("dog", "Confidence for detection $i: $confidence")
-            if (confidence > 0.001) {  // Threshold for detecting objects
+            val confidence = outputBuffer[0][i][4]
+            if (confidence > confidenceThreshold) {
                 val classScores = outputBuffer[0][i].slice(5 until outputBuffer[0][i].size)
-                val classId = classScores.indexOf(classScores.maxOrNull()!!)
-                val label = classLabels.getOrNull(classId) ?: "Unknown"
-                val text = "$label: ${confidence * 100.0}%"
-                detectedObjects.add(text)
-                Log.d("dog", "Detected $label with score $confidence")
+                val maxClassScore = classScores.maxOrNull() ?: 0.0f
+                val classId = classScores.indexOf(maxClassScore)
+                val score = maxClassScore
+                if (score > confidenceThreshold) {
+                    val x_center = outputBuffer[0][i][0] * originalWidth / inputSize
+                    val y_center = outputBuffer[0][i][1] * originalHeight / inputSize
+                    val width = outputBuffer[0][i][2] * originalWidth / inputSize
+                    val height = outputBuffer[0][i][3] * originalHeight / inputSize
+                    val x1 = x_center - (width / 2)
+                    val y1 = y_center - (height / 2)
+                    val x2 = x_center + (width / 2)
+                    val y2 = y_center + (height / 2)
+
+                    boxes.add(RectF(x1, y1, x2, y2))
+                    scores.add(score)
+                    classIds.add(classId)
+                }
             }
         }
 
+        // 디버깅: 탐지된 객체 정보 출력
+        Log.d("dog", "Detected boxes before NMS: ${boxes.joinToString(", ")}")
+        Log.d("dog", "Detected scores before NMS: ${scores.joinToString(", ")}")
+        Log.d("dog", "Detected class IDs before NMS: ${classIds.joinToString(", ")}")
+
+        val nmsIndices = nonMaxSuppression(boxes, scores, 0.5f, 0.4f)
+        val detectedObjects = nmsIndices.map { index ->
+            val box = boxes[index]
+            val score = scores[index]
+            val classId = classIds[index]
+            val label = classLabels[classId]
+            "$label: ${score * 100.0}% at [${box.left}, ${box.top}, ${box.right}, ${box.bottom}]"
+        }
+
+        Log.d("dog", "Detected Objects: ${detectedObjects.joinToString("\n")}")
         textView.text = detectedObjects.joinToString("\n")
+        drawDetectedObjects(boxes, nmsIndices)
         hideDetectionToast()
     }
+
+    private fun drawDetectedObjects(boxes: ArrayList<RectF>, nmsIndices: List<Int>) {
+        val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(mutableBitmap)
+        val paint = Paint().apply {
+            color = Color.RED
+            style = Paint.Style.STROKE
+            strokeWidth = 2.0f
+        }
+
+        nmsIndices.forEach { index ->
+            val box = boxes[index]
+            canvas.drawRect(box, paint)
+        }
+
+        imageView.setImageBitmap(mutableBitmap)
+    }
+
+    private fun nonMaxSuppression(boxes: ArrayList<RectF>, scores: ArrayList<Float>, scoreThreshold: Float, iouThreshold: Float): List<Int> {
+        val indices = ArrayList<Int>()
+        val order = scores.withIndex().sortedByDescending { it.value }.map { it.index }.toMutableList()
+
+        while (order.isNotEmpty()) {
+            val index = order[0]
+            indices.add(index)
+            val boxA = boxes[index]
+
+            val remain = order.drop(1).filter { i ->
+                val boxB = boxes[i]
+                calculateIOU(boxA, boxB) < iouThreshold
+            }
+            order.clear()
+            order.addAll(remain)
+        }
+
+        return indices
+    }
+
+
+    private fun calculateIOU(boxA: RectF, boxB: RectF): Float {
+        val intersection = RectF(
+            maxOf(boxA.left, boxB.left),
+            maxOf(boxA.top, boxB.top),
+            minOf(boxA.right, boxB.right),
+            minOf(boxA.bottom, boxB.bottom)
+        )
+
+        val intersectionArea = maxOf(intersection.width(), 0f) * maxOf(intersection.height(), 0f)
+        val boxAArea = boxA.width() * boxA.height()
+        val boxBArea = boxB.width() * boxB.height()
+
+        return intersectionArea / (boxAArea + boxBArea - intersectionArea)
+    }
+
 
     private fun showDetectionToast() {
         detectionToast = Toast.makeText(this, "물체를 탐지중입니다.\n잠시만 기다려주세요", Toast.LENGTH_SHORT)
         detectionToast?.show()
 
-        // Re-show the toast every short interval to keep it visible
-        val handler = Handler(Looper.getMainLooper())
-        val toastRunnable = object : Runnable {
+        // Re-show the toast every short interval to keep it visible, up to 3 times
+        toastCount = 1 // Reset toast count when starting
+
+        toastRunnable = object : Runnable {
             override fun run() {
-                detectionToast?.show()
-                handler.postDelayed(this, 2000) // Show toast every 2 seconds
+                if (toastCount < maxToastCount) {
+                    detectionToast?.show()
+                    toastCount++
+                    handler.postDelayed(this, 2000) // Show toast every 2 seconds
+                }
             }
         }
-        handler.post(toastRunnable)
+        handler.postDelayed(toastRunnable, 2000) // Start showing after 2 seconds
 
         // Stop showing the toast when the text is set in textView
         textView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
@@ -213,8 +364,11 @@ class Manager_CameraActivity : AppCompatActivity() {
         }
     }
 
+
     private fun hideDetectionToast() {
+        handler.removeCallbacks(toastRunnable)
         detectionToast?.cancel()
+        toastCount = 0 // Reset toast count when hiding
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
