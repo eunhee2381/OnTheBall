@@ -119,8 +119,23 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
     }
 
     private fun setupNavigationButtons() {
-        val managerMenuButton: ImageButton = findViewById(R.id.manager_menuButton)
-        managerMenuButton.setOnClickListener {
+        findViewById<ImageButton>(R.id.manager_list).setOnClickListener {
+            startActivity(Intent(this, Manager_ListActivity::class.java))
+        }
+
+        findViewById<ImageButton>(R.id.manager_rental).setOnClickListener {
+            startActivity(Intent(this, Manager_RentalActivity::class.java))
+        }
+
+        findViewById<ImageButton>(R.id.manager_camera).setOnClickListener {
+            startActivity(Intent(this, Manager_CameraActivity::class.java))
+        }
+
+        findViewById<ImageButton>(R.id.manager_mypage).setOnClickListener {
+            startActivity(Intent(this, Manager_MypageActivity::class.java))
+        }
+
+        findViewById<ImageButton>(R.id.manager_menuButton).setOnClickListener {
             showPopupMenu(it)
         }
     }
