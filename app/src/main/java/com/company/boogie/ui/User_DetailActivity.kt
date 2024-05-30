@@ -19,10 +19,22 @@ import android.app.DatePickerDialog
 import android.view.LayoutInflater
 import android.app.AlertDialog
 import com.company.boogie.utils.FirebaseRequestUtil
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.Calendar as Calendar
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okhttp3.Callback
+import okhttp3.Call
+import okhttp3.Response
+import java.io.IOException
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class User_DetailActivity : AppCompatActivity() {
     private lateinit var detailProduct: Product
@@ -185,17 +197,64 @@ class User_DetailActivity : AppCompatActivity() {
     }
 
     private fun sendRentalRequestNotification(productName: String) {
-        val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email ?: return
-        val message = "$currentUserEmail 님이 $productName 을 대여요청 하였습니다."
+        val db = Firebase.firestore
         val title = "대여 요청"
-        sendNotificationToServer(currentUserEmail, title, message)
+
+        // Firestore에서 isAdmin이 true인 모든 사용자(관리자)를 검색
+        db.collection("User").whereEqualTo("isAdmin", true).get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    Log.d("User_DetailActivity", "No admins found")
+                    return@addOnSuccessListener
+                }
+                // 각 관리자에게 대여 요청 메시지 보내기
+                for (document in documents) {
+                    val adminEmail = document.getString("email")
+                    val message = "${FirebaseAuth.getInstance().currentUser?.email}님이 $productName 을 대여요청 하였습니다."
+
+                    if (adminEmail != null) {
+                        sendNotificationToServer(adminEmail, title, message)
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("User_DetailActivity", "Error fetching admin documents", e)
+            }
     }
 
     private fun sendNotificationToServer(email: String, title: String, message: String) {
-        // 서버에 알림 요청을 보냅니다. (HTTP 요청을 사용하여 백엔드 서버 호출)
+        val client = OkHttpClient()
+
+        val json = """
+    {
+        "email": "$email",
+        "title": "$title",
+        "message": "$message"
+    }
+    """.trimIndent()
+
+        val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaType())
+        val url = "http://yourserver.com/api/sendRentalRequest" // 실제 서버 URL로 변경 필요
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("Notification", "알림 전송 실패", e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.e("Notification", "서버 응답: ${response.message}")
+                } else {
+                    Log.i("Notification", "알림이 성공적으로 전송되었습니다: $email")
+                }
+                response.close()
+            }
+        })
     }
 
-    private fun sendReservationRequest(){
-
-    }
 }
