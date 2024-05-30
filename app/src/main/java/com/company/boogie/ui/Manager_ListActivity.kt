@@ -35,6 +35,11 @@ class Manager_ListActivity : AppCompatActivity() {
             val query = findViewById<EditText>(R.id.editText).text.toString()
             filterProducts(query)
         }
+
+        // add_product 버튼 클릭 이벤트
+        findViewById<ImageButton>(R.id.add_product).setOnClickListener {
+            startActivity(Intent(this, Manager_Product_AddActivity::class.java))
+        }
     }
 
     // RecyclerView 설정
