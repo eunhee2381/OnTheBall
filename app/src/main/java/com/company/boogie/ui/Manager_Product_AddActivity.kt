@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.company.boogie.R
 import com.company.boogie.models.FirestoreProductModel
@@ -201,39 +202,50 @@ class Manager_Product_AddActivity : AppCompatActivity() {
             .setTitle("사진 추가")
             .setItems(options) { dialog, which ->
                 when (which) {
-                    0 -> pickImageFromGallery()
-                    1 -> takePictureWithCamera()
+                    0 -> checkGalleryPermission()
+                    1 -> checkCameraPermission()
                 }
             }
             .show()
     }
 
-    private fun pickImageFromGallery() {
+    private fun checkGalleryPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                1
+            )
         } else {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            selectImageLauncher.launch(intent)
+            pickImageFromGallery()
+        }
+    }
+
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        selectImageLauncher.launch(intent)
+    }
+
+    private fun checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                2
+            )
+        } else {
+            takePictureWithCamera()
         }
     }
 
     private fun takePictureWithCamera() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), 2)
-        } else {
-            val photoFile = createImageFile()
-            imageUri = Uri.fromFile(photoFile)
-            takePictureLauncher.launch(imageUri)
-        }
-    }
-
-    private fun createImageFile(): File {
         val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(UUID.randomUUID().toString(), ".jpg", storageDir)
+        val file = File.createTempFile(UUID.randomUUID().toString(), ".jpg", storageDir)
+        imageUri = Uri.fromFile(file)
+        takePictureLauncher.launch(imageUri)
     }
 
     private fun setupClassificationSpinner() {
@@ -266,7 +278,7 @@ class Manager_Product_AddActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("Manager_Product_AddActivity", "Failed to fetch last product ID", e)
+                Log.e("Manager_Product_AddActivity", "마지막 제품 ID를 가져오지 못했습니다.", e)
                 productIdTextView.text = "1"
             }
     }
@@ -330,6 +342,26 @@ class Manager_Product_AddActivity : AppCompatActivity() {
             }
         } else {
             Toast.makeText(this, "모든 필드를 올바르게 입력하세요.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pickImageFromGallery()
+                } else {
+                    Toast.makeText(this, "갤러리 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            2 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    takePictureWithCamera()
+                } else {
+                    Toast.makeText(this, "카메라 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }
