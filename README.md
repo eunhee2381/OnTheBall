@@ -25,14 +25,20 @@ AI를 활용한 기자재 대여 시스템
 <br>
 
 ### 📱 실행 화면
-* 사용자 로그인 / 마이페이지
 * 사용자 기자재 대여가능 목록
-* 사용자 기자재 반납 알림
-* 관리자 로그인 / 마이페이지
+* <img width = "200" src = "https://github.com/eunhee2381/OnTheBall/assets/127822054/d1ba4699-c6de-40e3-93fc-d1be7ec5f492">
+* 사용자 대여 기록
+* <img width = "200" src = "https://github.com/eunhee2381/OnTheBall/assets/127822054/303c97d3-86d5-40c3-b11a-4b737da1175c">
+* 사용자 로그인 / 마이페이지
+* <img width = "200" src = "https://github.com/eunhee2381/OnTheBall/assets/127822054/250004db-1f86-4e81-a25c-96d6dc5de168">
 * 관리자 기자재 대여 목록
+* <img width = "200" src = "https://github.com/eunhee2381/OnTheBall/assets/127822054/57699733-b3b1-4da2-bd65-a44b228e8d49">
 * 관리자 블랙리스트 목록
-* 관리자 블랙리스트 수정 목록
-  
+* <img width ="200" src = "https://github.com/eunhee2381/OnTheBall/assets/127822054/7244d4de-dfd7-4c7f-869e-07648d285c88">
+* 관리자 블랙리스트 수정 
+* <img width ="200" src = "https://github.com/eunhee2381/OnTheBall/assets/127822054/3eb0133c-ac67-45c7-ae1e-c6eae2c3058a">
+* 관리자 로그인 / 마이페이지
+* <img width = "200" src = "https://github.com/eunhee2381/OnTheBall/assets/127822054/933a8705-76a9-4244-9e19-57dedd74c469">
 
 <br>
 <br>
