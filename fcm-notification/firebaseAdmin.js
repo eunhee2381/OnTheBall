@@ -31,8 +31,8 @@ async function sendNotification(email, title, body) {
             body: body
         },
         data: {
-            userName: userEmail, // 사용자 이메일을 예시로 사용
-            productName: productName
+            email: email, // 사용자 이메일을 예시로 사용
+            body: body
         },
         token: token
     };
@@ -46,15 +46,24 @@ async function sendNotification(email, title, body) {
 }
 
 app.post('/api/sendRentalRequest', async (req, res) => {
-  const { productName, userEmail } = req.body;
-  const title = "대여 요청";
-  const message = `${userEmail}님이 ${productName}을 대여 요청하였습니다.`;
+  const { email, title, message } = req.body;
 
-  sendNotification(userEmail, title, message).then(() => {
+  if (!email || !title || !message) {
+    return res.status(400).send('필요한 정보가 누락되었습니다.');
+  }
+
+  try {
+    const token = await getTokenByEmail(email);
+    if (!token) {
+      throw new Error('사용자 토큰을 찾을 수 없습니다.');
+    }
+
+    await sendNotification(email, title, message);
     res.status(200).send('알림이 성공적으로 전송되었습니다');
-  }).catch(error => {
-    res.status(500).send('알림 전송 실패');
-  });
+  } catch (error) {
+    console.error('알림 전송 실패:', error);
+    res.status(500).send('알림 전송 실패: ' + error.message);
+  }
 });
 
 app.listen(port, () => {

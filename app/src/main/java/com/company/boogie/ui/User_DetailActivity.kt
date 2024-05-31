@@ -61,7 +61,7 @@ class User_DetailActivity : AppCompatActivity() {
         } else {
             findViewById<Button>(R.id.button_edit).text = "대여 불가"
             //findViewById<Button>(R.id.button_edit).setOnClickListener {
-                //showDatePickerDialog()
+              //  showDatePickerDialog()
             //}
         }
 
@@ -186,6 +186,7 @@ class User_DetailActivity : AppCompatActivity() {
             Log.d("User_DetailActivity", "신청하기 버튼 클릭됨")
             firebaseUtil.productToBorrowing(detailProduct.name, detailProduct.productId, formattedDate) { statusCode ->
                 Log.d("User_DetailActivity", "Firebase 응답: $statusCode")
+                sendRentalRequestNotification(detailProduct.name)
                 // 상태 코드에 따른 후속 처리
             }
             //firebaseUtil.borrowingToProduct(detailProduct.name, detailProduct.productId) { statusCode ->
@@ -213,7 +214,7 @@ class User_DetailActivity : AppCompatActivity() {
                     val message = "${FirebaseAuth.getInstance().currentUser?.email}님이 $productName 을 대여요청 하였습니다."
 
                     if (adminEmail != null) {
-                        sendNotificationToServer(adminEmail, title, message)
+                        sendNotificationToServer(adminEmail, detailProduct.name)
                     }
                 }
             }
@@ -222,19 +223,20 @@ class User_DetailActivity : AppCompatActivity() {
             }
     }
 
-    private fun sendNotificationToServer(email: String, title: String, message: String) {
+    private fun sendNotificationToServer(adminEmail: String, productName: String) {
         val client = OkHttpClient()
+        val userEmail = FirebaseAuth.getInstance().currentUser?.email ?: ""
 
         val json = """
     {
-        "email": "$email",
-        "title": "$title",
-        "message": "$message"
+        "email": "$adminEmail",
+        "title": "대여 요청",
+        "message": "$userEmail 님이 $productName 을 대여요청 하였습니다."
     }
     """.trimIndent()
 
         val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaType())
-        val url = "http://yourserver.com/api/sendRentalRequest" // 실제 서버 URL로 변경 필요
+        val url = "http://10.0.2.2:3000/api/sendRentalRequest" // 에뮬레이터에서 사용하는 서버 주소로 변경
 
         val request = Request.Builder()
             .url(url)
@@ -250,11 +252,13 @@ class User_DetailActivity : AppCompatActivity() {
                 if (!response.isSuccessful) {
                     Log.e("Notification", "서버 응답: ${response.message}")
                 } else {
-                    Log.i("Notification", "알림이 성공적으로 전송되었습니다: $email")
+                    Log.i("Notification", "알림이 성공적으로 전송되었습니다: $adminEmail")
                 }
                 response.close()
             }
         })
     }
+
+
 
 }

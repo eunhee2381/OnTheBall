@@ -116,7 +116,7 @@ class FirestoreMessagingModel : FirebaseMessagingService() {
      * 첫줄에 LoginActivity -> 새로 만든 수락/거절 액티비티 연결 필요
      */
     private fun generateNotification2(title: String, message: String, notificationId: Int) {
-        val intent = Intent(this, LoginActivity::class.java).apply {
+        val intent = Intent(this, Manager_Notification_DialogActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 

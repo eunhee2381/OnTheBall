@@ -39,7 +39,7 @@ class Manager_Notification_DialogActivity : AppCompatActivity() {
     }
 
     private fun sendNotification(email: String, isAccepted: Boolean) {
-        val url = "http://yourserver.com/api/sendNotification" // 실제 서버의 URL로 변경 필요
+        val url = "http://localhost:3000" // 실제 서버의 URL로 변경 필요
         val mediaType = "application/json; charset=utf-8".toMediaType() // 수정된 부분
         val title = if (isAccepted) "대여 요청 승인" else "대여 요청 거부"
         val message = if (isAccepted) "$email 사용자의 대여 요청이 허가되었습니다." else "$email 사용자의 대여 요청이 거부되었습니다."
