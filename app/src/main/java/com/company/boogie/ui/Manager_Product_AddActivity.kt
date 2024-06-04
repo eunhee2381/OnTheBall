@@ -4,16 +4,15 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,7 +22,7 @@ import com.company.boogie.models.FirestoreProductModel
 import com.company.boogie.StatusCode
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import java.io.File
+import java.io.InputStream
 import java.util.UUID
 
 class Manager_Product_AddActivity : AppCompatActivity() {
@@ -32,8 +31,6 @@ class Manager_Product_AddActivity : AppCompatActivity() {
     private lateinit var storage: FirebaseStorage
     private lateinit var imageUri: Uri
     private lateinit var imageView: ImageView
-    private lateinit var selectImageLauncher: ActivityResultLauncher<Intent>
-    private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private lateinit var classificationSpinner: Spinner
     private lateinit var productIdTextView: TextView
     private var isImageSelected: Boolean = false
@@ -41,17 +38,17 @@ class Manager_Product_AddActivity : AppCompatActivity() {
     private val classificationMap = mapOf(
         "아두이노 우노" to 0,
         "라즈베리파이 wh" to 1,
-        "라즈베리파이 제로" to 2 ,
-        "라즈베리파이 W" to 3 ,
-        "라즈베리파이 2 W" to 4 ,
-        "라즈베리파이 5" to 5 ,
-        "라즈베리파이 4 모델 B" to 6 ,
-        "라즈베리파이 3 모델 B" to 7 ,
-        "라즈베리파이 3 모델 B+" to 8 ,
-        "라즈베리파이 3 모델 A+" to 9 ,
-        "라즈베리파이 2 모델 B" to 10 ,
-        "라즈베리파이 1 모델 B+" to 11 ,
-        "라즈베리파이 1 모델 A+" to 12 ,
+        "라즈베리파이 제로" to 2,
+        "라즈베리파이 W" to 3,
+        "라즈베리파이 2 W" to 4,
+        "라즈베리파이 5" to 5,
+        "라즈베리파이 4 모델 B" to 6,
+        "라즈베리파이 3 모델 B" to 7,
+        "라즈베리파이 3 모델 B+" to 8,
+        "라즈베리파이 3 모델 A+" to 9,
+        "라즈베리파이 2 모델 B" to 10,
+        "라즈베리파이 1 모델 B+" to 11,
+        "라즈베리파이 1 모델 A+" to 12,
         "아두이노 레오나르도" to 13,
         "아두이노 마이크로" to 14,
         "아두이노 듀에" to 15,
@@ -60,6 +57,8 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         "아두이노 프로" to 18,
         "아두이노 제로" to 19
     )
+
+    private val PICK_IMAGE_REQUEST = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +71,6 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         productIdTextView = findViewById(R.id.product_id_textview)
 
         setupNavigationButtons()
-        setupImagePickers()
         setupClassificationSpinner()
 
         val productAddButton: Button = findViewById(R.id.product_add)
@@ -82,12 +80,14 @@ class Manager_Product_AddActivity : AppCompatActivity() {
 
         val photoAddButton: Button = findViewById(R.id.photo2)
         photoAddButton.setOnClickListener {
-            showPhotoOptionsDialog()
+            openImagePicker()
         }
 
         classificationSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                fetchLastProductId(position)
+                val classificationName = parent.getItemAtPosition(position) as String
+                val classificationCode = classificationMap[classificationName] ?: 0
+                fetchLastProductId(classificationCode)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -175,79 +175,6 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         builder.create().show()
     }
 
-    private fun setupImagePickers() {
-        selectImageLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                imageUri = result.data?.data!!
-                imageView.setImageURI(imageUri)
-                isImageSelected = true
-            }
-        }
-
-        takePictureLauncher = registerForActivityResult(
-            ActivityResultContracts.TakePicture()
-        ) { success ->
-            if (success) {
-                imageView.setImageURI(imageUri)
-                isImageSelected = true
-            }
-        }
-    }
-
-    private fun showPhotoOptionsDialog() {
-        val options = arrayOf("갤러리에서 선택", "카메라로 촬영")
-        AlertDialog.Builder(this)
-            .setTitle("사진 추가")
-            .setItems(options) { dialog, which ->
-                when (which) {
-                    0 -> checkGalleryPermission()
-                    1 -> checkCameraPermission()
-                }
-            }
-            .show()
-    }
-
-    private fun checkGalleryPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                1
-            )
-        } else {
-            pickImageFromGallery()
-        }
-    }
-
-    private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        selectImageLauncher.launch(intent)
-    }
-
-    private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                2
-            )
-        } else {
-            takePictureWithCamera()
-        }
-    }
-
-    private fun takePictureWithCamera() {
-        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val file = File.createTempFile(UUID.randomUUID().toString(), ".jpg", storageDir)
-        imageUri = Uri.fromFile(file)
-        takePictureLauncher.launch(imageUri)
-    }
-
     private fun setupClassificationSpinner() {
         classificationSpinner = findViewById(R.id.classification_spinner)
         val classificationNames = classificationMap.keys.toTypedArray()
@@ -281,6 +208,25 @@ class Manager_Product_AddActivity : AppCompatActivity() {
                 Log.e("Manager_Product_AddActivity", "마지막 제품 ID를 가져오지 못했습니다.", e)
                 productIdTextView.text = "1"
             }
+    }
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            val imageUri: Uri? = data?.data
+            imageUri?.let {
+                val inputStream: InputStream? = contentResolver.openInputStream(it)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                imageView.setImageBitmap(bitmap)
+                this.imageUri = it
+                isImageSelected = true
+            }
+        }
     }
 
     private fun addProductToFirestore() {
@@ -342,26 +288,6 @@ class Manager_Product_AddActivity : AppCompatActivity() {
             }
         } else {
             Toast.makeText(this, "모든 필드를 올바르게 입력하세요.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            1 -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    pickImageFromGallery()
-                } else {
-                    Toast.makeText(this, "갤러리 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
-            2 -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    takePictureWithCamera()
-                } else {
-                    Toast.makeText(this, "카메라 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
         }
     }
 }

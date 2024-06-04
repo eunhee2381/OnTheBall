@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.company.boogie.R
 import com.company.boogie.StatusCode
 import com.company.boogie.models.FirestoreUserModel
+import com.company.boogie.models.User
 import com.company.boogie.ui.adapter.BlacklistAdapter
 
 class Manager_BlacklistActivity : AppCompatActivity() {
@@ -24,9 +25,9 @@ class Manager_BlacklistActivity : AppCompatActivity() {
         setupNavigationButtons()
         setupRecyclerView()
 
-
         fetchBlacklistData()
     }
+
     private fun setupRecyclerView() {
         blacklistRecyclerView = findViewById(R.id.blacklist_recyclerview)
         blacklistRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -39,7 +40,7 @@ class Manager_BlacklistActivity : AppCompatActivity() {
                 blacklistAdapter = BlacklistAdapter(users)
                 blacklistRecyclerView.adapter = blacklistAdapter
             } else {
-                // Handle the error
+                // Handle the error, e.g., show a toast or log the error
             }
         }
     }
@@ -50,7 +51,6 @@ class Manager_BlacklistActivity : AppCompatActivity() {
             showPopupMenu(it)
         }
 
-        // 버튼들 인식
         val back_Button: ImageButton = findViewById(R.id.blacklist_back_button)
         val managerListButton: ImageButton = findViewById(R.id.manager_list)
         val managerRentalButton: ImageButton = findViewById(R.id.manager_rental)
@@ -58,7 +58,6 @@ class Manager_BlacklistActivity : AppCompatActivity() {
         val managerMypageButton: ImageButton = findViewById(R.id.manager_mypage)
         val blacklistModifyButton: ImageButton = findViewById(R.id.go_blacklist_modify)
         val managerAlarmButton: ImageButton = findViewById(R.id.manager_alarm)
-
 
         managerAlarmButton.setOnClickListener {
             startActivity(Intent(this, Manager_NotificationActivity::class.java))
