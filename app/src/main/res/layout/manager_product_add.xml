@@ -168,8 +168,8 @@
         app:layout_constraintStart_toStartOf="@+id/product_name"
         app:layout_constraintTop_toBottomOf="@+id/product_name" />
 
-    <TextView
-        android:id="@+id/product_id_textview"
+    <EditText
+        android:id="@+id/product_id_edittext"
         android:layout_width="120dp"
         android:layout_height="50dp"
         android:layout_marginTop="160dp"
@@ -177,6 +177,7 @@
         android:gravity="center_vertical"
         android:hint="번호"
         android:padding="8dp"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="@+id/product_name"
         app:layout_constraintTop_toBottomOf="@id/textView" />
 
@@ -188,7 +189,7 @@
         android:layout_marginBottom="5dp"
         android:background="@drawable/edit_text_background"
         app:layout_constraintBottom_toTopOf="@+id/explain"
-        app:layout_constraintEnd_toEndOf="@+id/product_id_textview"
+        app:layout_constraintEnd_toEndOf="@+id/product_id_edittext"
         app:layout_constraintTop_toBottomOf="@+id/frame_1" />
 
     <EditText
@@ -248,9 +249,9 @@
         android:layout_height="wrap_content"
         android:text="기자재 번호"
         android:textSize="19sp"
-        app:layout_constraintBottom_toBottomOf="@+id/product_id_textview"
+        app:layout_constraintBottom_toBottomOf="@+id/product_id_edittext"
         app:layout_constraintStart_toStartOf="@+id/location"
-        app:layout_constraintTop_toTopOf="@+id/product_id_textview" />
+        app:layout_constraintTop_toTopOf="@+id/product_id_edittext" />
 
     <TextView
         android:id="@+id/textView4"

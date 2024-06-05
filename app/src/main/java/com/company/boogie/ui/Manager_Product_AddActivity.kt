@@ -1,10 +1,7 @@
 package com.company.boogie.ui
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -15,8 +12,6 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.company.boogie.R
 import com.company.boogie.models.FirestoreProductModel
 import com.company.boogie.StatusCode
@@ -32,7 +27,7 @@ class Manager_Product_AddActivity : AppCompatActivity() {
     private lateinit var imageUri: Uri
     private lateinit var imageView: ImageView
     private lateinit var classificationSpinner: Spinner
-    private lateinit var productIdTextView: TextView
+    private lateinit var productIdEditText: EditText
     private var isImageSelected: Boolean = false
 
     private val classificationMap = mapOf(
@@ -59,6 +54,7 @@ class Manager_Product_AddActivity : AppCompatActivity() {
     )
 
     private val PICK_IMAGE_REQUEST = 1
+    private val defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/<your-app-id>.appspot.com/o/path%2Fto%2Fdefault_image.jpg?alt=media"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +64,7 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         storage = FirebaseStorage.getInstance()
         imageView = findViewById(R.id.imageView)
         classificationSpinner = findViewById(R.id.classification_spinner)
-        productIdTextView = findViewById(R.id.product_id_textview)
+        productIdEditText = findViewById(R.id.product_id_edittext)
 
         setupNavigationButtons()
         setupClassificationSpinner()
@@ -87,7 +83,9 @@ class Manager_Product_AddActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val classificationName = parent.getItemAtPosition(position) as String
                 val classificationCode = classificationMap[classificationName] ?: 0
-                fetchLastProductId(classificationCode)
+                fetchLastProductId(classificationCode) { productNumber ->
+                    productIdEditText.setText(productNumber.toString())
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -167,7 +165,13 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("추가하겠습니까?")
             .setPositiveButton("확인") { dialog, id ->
-                addProductToFirestore()
+                val classificationName = classificationSpinner.selectedItem as String
+                val classificationCode = classificationMap[classificationName] ?: 0
+                if (isImageSelected) {
+                    uploadImageAndAddProduct(classificationCode)
+                } else {
+                    addProductToFirestore(classificationCode, defaultImageUrl)
+                }
             }
             .setNegativeButton("취소") { dialog, id ->
                 dialog.dismiss()
@@ -188,7 +192,7 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchLastProductId(classificationCode: Int) {
+    private fun fetchLastProductId(classificationCode: Int, onSuccess: (Int) -> Unit) {
         val db = FirebaseFirestore.getInstance()
         db.collection("Product")
             .whereEqualTo("classificationCode", classificationCode)
@@ -199,14 +203,14 @@ class Manager_Product_AddActivity : AppCompatActivity() {
                 if (documents != null && !documents.isEmpty) {
                     val lastProduct = documents.documents[0]
                     val lastProductId = lastProduct.getLong("productId")?.toInt() ?: 0
-                    productIdTextView.text = (lastProductId + 1).toString()
+                    onSuccess(lastProductId + 1)
                 } else {
-                    productIdTextView.text = "1"
+                    onSuccess(1)
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("Manager_Product_AddActivity", "마지막 제품 ID를 가져오지 못했습니다.", e)
-                productIdTextView.text = "1"
+                Log.e("Manager_Product_AddActivity", "마지막 product ID를 찾을 수 없습니다.", e)
+                onSuccess(1)
             }
     }
 
@@ -229,65 +233,51 @@ class Manager_Product_AddActivity : AppCompatActivity() {
         }
     }
 
-    private fun addProductToFirestore() {
-        val productName = findViewById<EditText>(R.id.product_name).text.toString()
-        val productLocation = findViewById<EditText>(R.id.location).text.toString()
-        val productNumber = productIdTextView.text.toString().toIntOrNull()
-        val classificationName = classificationSpinner.selectedItem as String
-        val classificationCode = classificationMap[classificationName] ?: 0
-        val productDetail = findViewById<EditText>(R.id.explain).text.toString()
-
-        if (productNumber != null) {
-            if (isImageSelected) {
-                val imageRef = storage.reference.child("images/${UUID.randomUUID()}.jpg")
-                imageRef.putFile(imageUri)
-                    .addOnSuccessListener { taskSnapshot ->
-                        imageRef.downloadUrl.addOnSuccessListener { uri ->
-                            firestoreProductModel.addProduct(
-                                addProductId = productNumber,
-                                addName = productName,
-                                addLocation = productLocation,
-                                addImage = uri.toString(),
-                                addDetail = productDetail,
-                                addClassificationCode = classificationCode
-                            ) { statusCode ->
-                                if (statusCode == StatusCode.SUCCESS) {
-                                    Toast.makeText(this, "기자재 추가 성공", Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(this, Manager_ListActivity::class.java))
-                                    finish()
-                                } else {
-                                    Toast.makeText(this, "기자재 추가 실패", Toast.LENGTH_SHORT).show()
-                                    Log.e("Manager_Product_AddActivity", "기자재 추가 실패")
-                                }
-                            }
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "이미지 업로드 실패: ${e.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("Manager_Product_AddActivity", "이미지 업로드 실패", e)
-                    }
-            } else {
-                val defaultImageUrl = "https://example.com/default_image.jpg"
-                firestoreProductModel.addProduct(
-                    addProductId = productNumber,
-                    addName = productName,
-                    addLocation = productLocation,
-                    addImage = defaultImageUrl,
-                    addDetail = productDetail,
-                    addClassificationCode = classificationCode
-                ) { statusCode ->
-                    if (statusCode == StatusCode.SUCCESS) {
-                        Toast.makeText(this, "기자재 추가 성공", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, Manager_ListActivity::class.java))
-                        finish()
-                    } else {
-                        Toast.makeText(this, "기자재 추가 실패", Toast.LENGTH_SHORT).show()
-                        Log.e("Manager_Product_AddActivity", "기자재 추가 실패")
-                    }
+    private fun uploadImageAndAddProduct(classificationCode: Int) {
+        val imageRef = storage.reference.child("images/${UUID.randomUUID()}.jpg")
+        imageRef.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    addProductToFirestore(classificationCode, uri.toString())
                 }
             }
-        } else {
-            Toast.makeText(this, "모든 필드를 올바르게 입력하세요.", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "이미지 업로드 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("Manager_Product_AddActivity", "이미지 업로드 실패", e)
+            }
+    }
+
+    private fun addProductToFirestore(classificationCode: Int, imageUrl: String) {
+        val db = FirebaseFirestore.getInstance()
+        val productId = productIdEditText.text.toString().toIntOrNull() ?: return
+        val productName = findViewById<EditText>(R.id.product_name).text.toString()
+        val productLocation = findViewById<EditText>(R.id.location).text.toString()
+        val productDetail = findViewById<EditText>(R.id.explain).text.toString()
+
+        if (productName.isEmpty() || productLocation.isEmpty() || productDetail.isEmpty()) {
+            Toast.makeText(this, "모든 필드를 채워주세요.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val product = hashMapOf(
+            "productId" to productId,
+            "name" to productName,
+            "location" to productLocation,
+            "classificationCode" to classificationCode,
+            "detail" to productDetail,
+            "img" to imageUrl // 필드명을 "image"에서 "img"로 변경
+        )
+
+        db.collection("Product")
+            .add(product)
+            .addOnSuccessListener {
+                Toast.makeText(this, "기자재 추가 성공", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, Manager_ListActivity::class.java))
+                finish()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "기자재 추가 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("Manager_Product_AddActivity", "기자재 추가 실패", e)
+            }
     }
 }
