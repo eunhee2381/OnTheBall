@@ -3,12 +3,14 @@ package com.company.boogie.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,7 +38,13 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
         blacklistRecyclerView = findViewById(R.id.blacklist_recyclerview)
 
         findViewById<Button>(R.id.add_blacklist_button).setOnClickListener {
-            addUserToBlacklist()
+            val email = additionNameEditText.text.toString()
+            val notReturned = notReturnedEditText.text.toString()
+
+            // 블랙리스트 계정 정보 예외처리 후 블랙리스트 추가
+            if (validateUser(email, notReturned)) {
+                addUserToBlacklist(email, notReturned)
+            }
         }
 
         findViewById<Button>(R.id.modify_button).setOnClickListener {
@@ -52,31 +60,42 @@ class Manager_Blacklist_ModifyActivity : AppCompatActivity() {
         loadBlacklist()
     }
 
-    private fun addUserToBlacklist() {
-        val email = additionNameEditText.text.toString()
-        val notReturned = notReturnedEditText.text.toString()
+    // 블랙리스트 계정 정보 예외처리 (계정 이메일, 미반납 기자재명)
+    private fun validateUser(email: String, notReturned: String): Boolean {
+        // 계정 이메일 - Email
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "추가할 계정 이메일을 입력하세요.", Toast.LENGTH_SHORT).show()
+            return false
+        }
 
-        if (email.isNotEmpty() && notReturned.isNotEmpty()) {
-            firestoreUserModel.getUserByEmail(email) { user ->
-                if (user != null) {
-                    user.isBanned = true
-                    user.borrowing = notReturned
-                    Log.d("Manager_Blacklist_ModifyActivity", "블랙리스트에 추가: $email")
-                    firestoreUserModel.updateUser(user) { status ->
-                        if (status == StatusCode.SUCCESS) {
-                            Log.d("Manager_Blacklist_ModifyActivity", "블랙리스트 업데이트 성공: $email")
-                            loadBlacklist()
-                        } else {
-                            Log.e("Manager_Blacklist_ModifyActivity", "블랙리스트 업데이트 실패: $email")
-                        }
+        // 미반납 기자재명 - NotEmpty
+        if (notReturned.isEmpty()) {
+            Toast.makeText(this, "미반납한 기자재명을 입력하세요.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
+    }
+
+    // 블랙리스트 추가
+    private fun addUserToBlacklist(email: String, notReturned: String) {
+        firestoreUserModel.getUserByEmail(email) { user ->
+            if (user != null) {
+                user.isBanned = true
+                user.borrowing = notReturned
+                Log.d("Manager_Blacklist_ModifyActivity", "블랙리스트에 추가: $email")
+                firestoreUserModel.updateUser(user) { status ->
+                    if (status == StatusCode.SUCCESS) {
+                        Log.d("Manager_Blacklist_ModifyActivity", "블랙리스트 업데이트 성공: $email")
+                        loadBlacklist()
+                    } else {
+                        Log.e("Manager_Blacklist_ModifyActivity", "블랙리스트 업데이트 실패: $email")
                     }
-                } else {
-                    Log.e("Manager_Blacklist_ModifyActivity", "사용자를 찾을 수 없음: $email")
-                    showUserNotFoundDialog()  // 사용자 없음 다이얼로그 표시
                 }
+            } else {
+                Log.e("Manager_Blacklist_ModifyActivity", "사용자를 찾을 수 없음: $email")
+                showUserNotFoundDialog()  // 사용자 없음 다이얼로그 표시
             }
-        } else {
-            Log.e("Manager_Blacklist_ModifyActivity", "이메일이나 미반납한 기자재명이 비어 있음")
         }
     }
 
