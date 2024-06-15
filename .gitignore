@@ -14,3 +14,4 @@
 .cxx
 local.properties
 fcm-notification/serviceAccountKey.json
+app/google-services.json
