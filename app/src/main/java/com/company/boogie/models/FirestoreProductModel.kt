@@ -115,7 +115,7 @@ class FirestoreProductModel {
     }
 
     /**
-     * Firestore에서 특정 기자재을 삭제합니다.
+     * Firestore에서 기자재의 문서 ID로 특정 기자재을 삭제합니다.
      *
      * @param documentId 조회를 위한 기자재 document의 ID입니다.
      * @param canBorrow true면 Product 컬렉션에서, false면 Borrowing 컬렉션에서 조회합니다.
@@ -291,7 +291,7 @@ class FirestoreProductModel {
     }
 
     /**
-     * Firestore에서 기자재 정보를 수정합니다.
+     * Firestore에서 기자재 정보를 Product 또는 Borrowing 컬렉션에서 수정합니다.
      *
      * @param documentId 조회를 위한 기자재 document의 ID입니다.
      * @param canBorrow true면 Product 컬렉션에서, false면 Borrowing 컬렉션에서 조회합니다.
@@ -345,27 +345,26 @@ class FirestoreProductModel {
      * @param callback 상태 코드(STATUS_CODE)를 반환하는 콜백 함수입니다.
      */
     fun updateImg(uri: Uri, classificatonCode: Int, productId: Int, documentId: String, canBorrow: Boolean, callback: (Int) -> Unit) {
+        // Storage에 이미지 업로드
         val storageRef = Firebase.storage.reference.child("Product/$classificatonCode/$productId.jpg")
         storageRef.putFile(uri)
             .addOnSuccessListener { _ ->
                 Log.d("FirestoreProductModel", "이미지 storage에 업로드 성공")
-                storageRef.downloadUrl
-                    .addOnSuccessListener { downloadUri ->
-                        val imageUrl = downloadUri.toString()
-                        Log.d("FirestoreProductModel", "storage 저장소 경로 알아오기 성공 $imageUrl")
-                        val collectionRef = if (canBorrow) db.collection("Product") else db.collection("Borrowing")
-                        collectionRef.document(documentId).update("img", imageUrl)
-                            .addOnSuccessListener {
-                                Log.d("FirestoreProductModel", "firestore img 필드에 storage 저장소 경로 업데이트 성공")
-                                callback(StatusCode.SUCCESS)
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w("FirestoreProductModel", "firestore img 필드에 storage 저장소 경로 업데이트 실패", e)
-                                callback(StatusCode.FAILURE)
-                            }
+
+                // Storage 이미지 경로 ('gs://' 로 시작)
+                val imagePath = storageRef.path
+                val gsPath = "gs://${Firebase.storage.reference.bucket}$imagePath"
+                Log.d("FirestoreProductModel", "storage 저장소 경로: $gsPath")
+
+                // Firestore에 이미지 경로를 img 필드에 저장
+                val collectionRef = if (canBorrow) db.collection("Product") else db.collection("Borrowing")
+                collectionRef.document(documentId).update("img", gsPath)
+                    .addOnSuccessListener {
+                        Log.d("FirestoreProductModel", "firestore img 필드에 storage 저장소 경로 업데이트 성공")
+                        callback(StatusCode.SUCCESS)
                     }
                     .addOnFailureListener { e ->
-                        Log.w("FirestoreProductModel", "storage 저장소 경로 알아오기 실패", e)
+                        Log.w("FirestoreProductModel", "firestore img 필드에 storage 저장소 경로 업데이트 실패", e)
                         callback(StatusCode.FAILURE)
                     }
             }

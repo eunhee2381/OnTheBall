@@ -52,7 +52,11 @@ class Manager_ModifyActivity : AppCompatActivity() {
         findViewById<Button>(R.id.change).setOnClickListener {
             val location = productLocation.text.toString()
             val explain = productExplain.text.toString()
-            updateProduct(location, explain) // 기자재 업데이트
+
+            // 기자재 수정 정보 예외처리 후 기자재 업데이트
+            if (validateProduct(location, explain)) {
+                updateProduct(location, explain)
+            }
         }
 
         // 기자재 삭제 버튼 클릭 이벤트
@@ -79,6 +83,23 @@ class Manager_ModifyActivity : AppCompatActivity() {
                 Log.w("Manager_ModifyActivity", "$documentId 기자재 상세 정보 가져오기 실패")
             }
         }
+    }
+
+    // 기자재 수정 정보 예외처리 (위치, 설명)
+    private fun validateProduct(location: String, explain: String): Boolean {
+        // 위치 - NotEmpty
+        if (location.isEmpty()) {
+            Toast.makeText(this, "기자재 위치를 입력하세요.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // 설명 - NotEmpty
+        if (explain.isEmpty()) {
+            Toast.makeText(this, "기자재 설명을 입력하세요.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        return true
     }
 
     // 기자재 업데이트
